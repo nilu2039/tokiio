@@ -39,22 +39,16 @@ const TopCardSection = () => {
   return (
     <View
       style={{
-        position: "absolute",
+        // position: "absolute",
         width: WIDTH,
         // backgroundColor: "lightblue",
-        height: HEIGHT * 0.3,
+        height: HEIGHT * 0.38,
         top: 0,
       }}
     >
       <GradientText
-        style={{
-          color: COLORS.white,
-          fontSize: wp(6),
-          fontWeight: "600",
-          paddingLeft: wp(10),
-          marginTop: hp(2),
-        }}
         label="Top Airing"
+        style={{ marginTop: hp(2), paddingLeft: wp(10) }}
       />
       <Carousel
         style={{
