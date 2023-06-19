@@ -1,20 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { DefaultTheme, NavigationContainer } from "@react-navigation/native"
+import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import { QueryClient, QueryClientProvider } from "react-query"
+import HomeScreen from "./src/screens/HomeScreen"
+
+const Stack = createNativeStackNavigator()
+
+const queryClient = new QueryClient()
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <QueryClientProvider client={queryClient}>
+      <NavigationContainer
+        theme={{
+          ...DefaultTheme,
+          colors: {
+            ...DefaultTheme.colors,
+            background: "#000",
+          },
+        }}
+      >
+        <Stack.Navigator>
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="HomeScreen"
+            component={HomeScreen}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </QueryClientProvider>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
