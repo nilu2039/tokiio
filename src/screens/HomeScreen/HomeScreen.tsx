@@ -1,10 +1,10 @@
 // import { Canvas, LinearGradient, Rect, vec } from "@shopify/react-native-skia"
-import React from "react"
-import { SafeAreaView, ScrollView, StyleSheet, View } from "react-native"
-import { HEIGHT, WIDTH } from "../../utils/dimensions"
-import TopCardSection from "./TopCardSection"
-import RecentEpisodes from "./RecentEpisodes"
 import { LinearGradient } from "expo-linear-gradient"
+import React from "react"
+import { SafeAreaView, ScrollView, StyleSheet } from "react-native"
+import { WIDTH } from "../../utils/dimensions"
+import RecentEpisodes from "./RecentEpisodes"
+import TopCardSection from "./TopCardSection"
 
 const HomeScreen = () => {
   return (

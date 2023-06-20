@@ -36,3 +36,29 @@ export const RecentEpisodesSchema = z.object({
 
 export type RecentEpisodesResult = z.infer<typeof RecentEpisodesResultSchema>
 export type RecentEpisodes = z.infer<typeof RecentEpisodesSchema>
+
+//anime-info
+
+export const EpisodeSchema = z.object({
+  id: z.string(),
+  number: z.number(),
+  url: z.string(),
+})
+export type Episode = z.infer<typeof EpisodeSchema>
+
+export const AnimeInfoSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  url: z.string(),
+  genres: z.array(z.string()),
+  totalEpisodes: z.number(),
+  image: z.string(),
+  releaseDate: z.string(),
+  description: z.string(),
+  subOrDub: z.string(),
+  type: z.string(),
+  status: z.string(),
+  otherName: z.string(),
+  episodes: z.array(EpisodeSchema),
+})
+export type AnimeInfo = z.infer<typeof AnimeInfoSchema>

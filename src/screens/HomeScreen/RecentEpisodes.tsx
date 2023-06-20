@@ -1,5 +1,12 @@
 import React from "react"
-import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native"
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native"
 import { FlatList } from "react-native-gesture-handler"
 import {
   heightPercentageToDP as hp,
@@ -15,6 +22,10 @@ import type {
   RecentEpisodesResult,
   RecentEpisodes as RecentEpisodesType,
 } from "../../types/explore"
+import { useNavigation } from "@react-navigation/native"
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { RootStackProps } from "../../../App"
+import { startCase } from "lodash"
 
 interface RecentEpisodeCardProps {
   data: RecentEpisodesResult[] | []
@@ -27,6 +38,8 @@ const RecentEpisodesCard: React.FC<RecentEpisodeCardProps> = ({
   data = [],
   fetchNextPage,
 }) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackProps, "Player">>()
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <FlatList
@@ -43,13 +56,24 @@ const RecentEpisodesCard: React.FC<RecentEpisodeCardProps> = ({
         }}
         renderItem={({ item, index }) => {
           return (
-            <View
+            <Pressable
+              onPress={() => {
+                navigation.navigate("Player", {
+                  id: item.id,
+                  title: item.title ? item.title : startCase(item.id),
+                  image: item.image,
+                  url: item.url,
+                  genres: [],
+                  episodeId: item.episodeId,
+                })
+              }}
               style={{
                 height: hp(25),
                 width: wp(40),
                 marginHorizontal: wp(3),
                 backgroundColor: "lightgray",
                 borderRadius: wp(2),
+                borderBottomLeftRadius: 0,
               }}
             >
               <View style={{ marginBottom: hp(1.5) }}>
@@ -61,6 +85,7 @@ const RecentEpisodesCard: React.FC<RecentEpisodeCardProps> = ({
                     marginBottom: hp(1.5),
                     position: "relative",
                     borderRadius: wp(2),
+                    borderBottomLeftRadius: 0,
                   }}
                 />
                 <View
@@ -97,7 +122,7 @@ const RecentEpisodesCard: React.FC<RecentEpisodeCardProps> = ({
               >
                 {item.title}
               </Text>
-            </View>
+            </Pressable>
           )
         }}
       />

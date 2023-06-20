@@ -34,8 +34,6 @@ const TopCardSection = () => {
     return <ActivityIndicator />
   }
 
-  //   console.log(data?.pages.flatMap((item) => console.log(item?.results)))
-
   return (
     <View
       style={{
@@ -56,7 +54,7 @@ const TopCardSection = () => {
           height: ITEM_HEIGHT,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "dodgerblue",
+          backgroundColor: "lightgray",
           marginTop: hp(8),
           borderRadius: wp(2),
         }}

@@ -8,7 +8,7 @@ import { widthPercentageToDP } from "react-native-responsive-screen"
 interface UIButtonProps {
   containerStyle?: StyleProp<ViewStyle>
   labelStyle?: StyleProp<TextStyle>
-  onPress?: () => null
+  onPress?: () => void
   label: string
   Icon?: ReactElement
 }

@@ -1,9 +1,18 @@
 import { AVPlaybackStatusSuccess, Audio, Video } from "expo-av"
-import { useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
+import { ActivityIndicator, SafeAreaView, View, ViewStyle } from "react-native"
+import { StyleProp } from "react-native"
+import { heightPercentageToDP } from "react-native-responsive-screen"
 
-const VideoPlayer = () => {
+interface VideoPlayerProps {
+  uri: string
+  style: StyleProp<ViewStyle>
+}
+
+const VideoPlayer: FC<VideoPlayerProps> = ({ uri, style }) => {
   const videoRef = useRef(null)
   const [status, setStatus] = useState<AVPlaybackStatusSuccess>()
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   useEffect(() => {
     triggerAudio()
@@ -12,19 +21,39 @@ const VideoPlayer = () => {
     await Audio.setAudioModeAsync({ playsInSilentModeIOS: true })
   }
   return (
-    <Video
-      ref={videoRef}
-      style={{ height: 500 }}
-      source={{
-        uri: "https://www051.anifastcdn.info/videos/hls/Q4c8gpbDQa4_fLwh_QdbHQ/1687120072/203090/f134bc36b9bb59de2ef28a48a7cef6bf/ep.2.1681918907.m3u8",
-      }}
-      useNativeControls
-      onPlaybackStatusUpdate={(status) => {
-        setStatus(status as AVPlaybackStatusSuccess)
-      }}
-      isMuted={false}
-      shouldPlay={true}
-    />
+    <>
+      <Video
+        ref={videoRef}
+        style={style}
+        source={{
+          uri: uri,
+        }}
+        useNativeControls
+        onLoad={() => setIsInitialLoading(false)}
+        onPlaybackStatusUpdate={(status) => {
+          setStatus(status as AVPlaybackStatusSuccess)
+        }}
+        isMuted={false}
+        shouldPlay={true}
+      />
+      {isInitialLoading ? (
+        <View
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <View
+            style={{
+              position: "absolute",
+              top: -heightPercentageToDP(20),
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        </View>
+      ) : null}
+    </>
   )
 }
 

@@ -13,6 +13,12 @@ import { LinearGradient } from "expo-linear-gradient"
 import UIButton from "./UIButton"
 
 import { Foundation } from "@expo/vector-icons"
+import { useNavigation } from "@react-navigation/native"
+import type {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack"
+import { RootStackProps } from "../../../App"
 
 // import {
 //   BackdropBlur,
@@ -79,6 +85,8 @@ const Carousel: React.FC<CarouselProps> = ({
   ITEM_HEIGHT,
   data = [],
 }) => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackProps>>()
+
   const _renderItem = ({
     item,
     index,
@@ -87,12 +95,6 @@ const Carousel: React.FC<CarouselProps> = ({
     index: number
   }) => {
     return (
-      // <ThumbNailCard
-      //   item={item}
-      //   style={style}
-      //   ITEM_WIDTH={ITEM_WIDTH}
-      //   ITEM_HEIGHT={ITEM_HEIGHT}
-      // />
       <View style={style}>
         <ImageBackground
           style={{
@@ -134,6 +136,15 @@ const Carousel: React.FC<CarouselProps> = ({
                   alignItems: "center",
                   justifyContent: "center",
                 }}
+                onPress={() =>
+                  navigation.navigate("Player", {
+                    id: item.id,
+                    title: item.title ? item.title : startCase(item.id),
+                    image: item.image,
+                    url: item.url,
+                    genres: item.genres,
+                  })
+                }
                 label="Play Now"
                 labelStyle={{
                   color: COLORS.white,
