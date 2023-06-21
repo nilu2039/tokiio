@@ -14,7 +14,8 @@ import GradientText from "../../components/ui/GradientText"
 
 const SLIDER_WIDTH = WIDTH
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.8)
-const ITEM_HEIGHT = Math.round((ITEM_WIDTH * 3) / 4)
+// const ITEM_HEIGHT = Math.round((ITEM_WIDTH * 3) / 4)
+const ITEM_HEIGHT = Math.round(hp(30))
 
 const TopCardSection = () => {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } =
@@ -40,7 +41,7 @@ const TopCardSection = () => {
         // position: "absolute",
         width: WIDTH,
         // backgroundColor: "lightblue",
-        height: HEIGHT * 0.38,
+        height: hp(40),
         top: 0,
       }}
     >

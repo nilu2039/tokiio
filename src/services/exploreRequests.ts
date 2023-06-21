@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { CancelTokenSource } from "axios"
 import {
   type TopAiring,
   TopAiringSchema,
@@ -6,6 +6,8 @@ import {
   RecentEpisodesSchema,
   AnimeInfo,
   AnimeInfoSchema,
+  AnimeSearch,
+  AnimeSearchSchema,
 } from "../types/explore"
 import { ZodError } from "zod"
 import { BASE_URL } from "../utils/constants"
@@ -19,6 +21,7 @@ export const getTopAiring = async ({ page = 1 }): Promise<TopAiring | null> => {
   } catch (error) {
     if (error instanceof ZodError) {
       console.log("type parsing error")
+      return null
     }
     throw error
   }
@@ -34,6 +37,7 @@ export const getRecentEpisodes = async ({
   } catch (error) {
     if (error instanceof ZodError) {
       console.log("type parsing error")
+      return null
     }
     throw error
   }
@@ -47,6 +51,7 @@ export const getAnimeInfo = async ({ id = "" }): Promise<AnimeInfo | null> => {
   } catch (error) {
     if (error instanceof ZodError) {
       console.log("type parsing error")
+      return null
     }
     throw error
   }
@@ -66,6 +71,42 @@ export const getStreamingLinks = async ({
   } catch (error) {
     if (error instanceof ZodError) {
       console.log("type parsing error")
+      return null
+    }
+    throw error
+  }
+}
+
+let searchCancelToken: CancelTokenSource
+
+export const searchAnime = async ({
+  searchQuery,
+  page = 1,
+}: {
+  searchQuery: string | undefined
+  page: number
+}): Promise<AnimeSearch | null> => {
+  try {
+    if (searchCancelToken) {
+      searchCancelToken.cancel("operation cancelled")
+    }
+
+    searchCancelToken = axios.CancelToken.source()
+
+    const { data } = await axios.get(
+      `${BASE_URL}/search?name=${searchQuery}&page=${page}`,
+      { cancelToken: searchCancelToken.token }
+    )
+    AnimeSearchSchema.parse(data)
+    return data
+  } catch (error) {
+    if (error instanceof ZodError) {
+      console.log("type parsing error")
+      return null
+    }
+    if (axios.isCancel(error)) {
+      console.log("request cancelled")
+      return null
     }
     throw error
   }

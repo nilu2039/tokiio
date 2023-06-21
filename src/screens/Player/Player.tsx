@@ -18,16 +18,32 @@ import {
 } from "react-native-responsive-screen"
 import { COLORS } from "../../config/colors"
 import { useNavigation } from "@react-navigation/native"
+import { ZodError, z } from "zod"
+import { rotate } from "@shopify/react-native-skia"
 
 type PlayerRouteProps = NativeStackScreenProps<RootStackProps, "Player">
 
+const PlayerRouteSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  episodeId: z.string().optional(),
+})
+
 const Player: React.FC<PlayerRouteProps> = ({ route }) => {
-  const { id, title, episodeId } = route?.params!
+  try {
+    const validPlayerParams = PlayerRouteSchema.parse(route.params)
+    const { id, title, episodeId } = validPlayerParams
+  } catch (error) {
+    if (error instanceof ZodError) {
+      console.log("player prams parsing error")
+    }
+  }
+
   const navigation = useNavigation()
 
   const { data, isLoading } = useQuery({
     queryKey: "anime-info-23",
-    queryFn: () => getAnimeInfo({ id }),
+    queryFn: () => getAnimeInfo({ id: route.params?.id }),
     cacheTime: 0,
   })
 
@@ -55,7 +71,6 @@ const Player: React.FC<PlayerRouteProps> = ({ route }) => {
         >
           <FontAwesome
             onPress={() => {
-              console.log("PRESSED")
               navigation.goBack()
             }}
             name="angle-left"
@@ -66,10 +81,12 @@ const Player: React.FC<PlayerRouteProps> = ({ route }) => {
           <GradientText
             numberOfLines={1}
             style={{ fontSize: wp(4), width: WIDTH, textAlign: "center" }}
-            label={`${title.substring(0, 25)}${title.length > 25 ? "..." : ""}`}
+            label={`${route.params?.title.substring(0, 25)}${
+              route.params?.title.length! > 25 ? "..." : ""
+            }`}
           />
         </View>
-        <EpisodeList episodeId={episodeId} data={data} />
+        <EpisodeList episodeId={route.params?.episodeId} data={data} />
       </SafeAreaView>
     </LinearGradient>
   )

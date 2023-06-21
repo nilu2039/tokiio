@@ -4,10 +4,14 @@ import { QueryClient, QueryClientProvider } from "react-query"
 import HomeScreen from "./src/screens/HomeScreen/HomeScreen"
 import Player from "./src/screens/Player/Player"
 import type { TopAiringResult } from "./src/types/explore"
+import Search from "./src/screens/Search/Search"
 
 export type RootStackProps = {
   HomeScreen: undefined
   Player: (TopAiringResult & { episodeId?: string }) | undefined
+  Search: {
+    searchQuery: string
+  }
 }
 
 const Stack = createNativeStackNavigator<RootStackProps>()
@@ -43,6 +47,11 @@ export default function App() {
             }}
             name="Player"
             component={Player}
+          />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="Search"
+            component={Search}
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -1,8 +1,9 @@
 import { Foundation } from "@expo/vector-icons"
-import React, { FC, useRef, useState } from "react"
+import React, { FC, useEffect, useRef, useState } from "react"
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Pressable,
   Text,
   View,
@@ -19,6 +20,7 @@ import VideoPlayer from "../../components/ui/VideoPlayer"
 import { COLORS } from "../../config/colors"
 import { getStreamingLinks } from "../../services/exploreRequests"
 import { AnimeInfo } from "../../types/explore"
+import EpisodeDescription from "./EpisodeDescription"
 
 interface EpisodeListProps {
   data: AnimeInfo | null | undefined
@@ -26,15 +28,32 @@ interface EpisodeListProps {
 }
 
 const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
+  if (data?.episodes.length === 0) {
+    return (
+      <View
+        style={{
+          height: hp(90),
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Text
+          style={{ color: COLORS.white, fontSize: wp(12), fontWeight: "600" }}
+        >
+          {data.status}
+        </Text>
+      </View>
+    )
+  }
+
   const insets = useSafeAreaInsets()
   const [selectedEpisodeId, setSelectedEpisodeId] = useState(
     episodeId ? episodeId : data?.episodes[0].id
   )
+  const [firstView, setFirstView] = useState(true)
 
   const listRef = useRef<FlatList>(null)
   const scrollToIndex = (index: number) => {
-    console.log("SCROLLING")
-
     if (listRef.current) {
       listRef.current.scrollToIndex({ index })
     }
@@ -46,7 +65,31 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
       queryFn: () => getStreamingLinks({ episodeId: selectedEpisodeId }),
     })
 
-  //   scrollToIndex(22)
+  if (firstView && listRef.current) {
+    if (episodeId) {
+      scrollToIndex(data?.totalEpisodes! - 1 || 0)
+      setFirstView(false)
+    }
+  }
+
+  const extractBestStreamingUrl = (
+    sources:
+      | {
+          url: string
+          isM3U8: boolean
+          quality: string
+        }[]
+      | undefined
+  ) => {
+    const p_1080 = sources?.find((item) => item.quality === "1080p")
+    if (p_1080) return p_1080.url
+    const p_720 = sources?.find((item) => item.quality === "720p")
+    if (p_720) return p_720.url
+    const p_480 = sources?.find((item) => item.quality === "480p")
+    if (p_480) return p_480.url
+    const p_360 = sources?.find((item) => item.quality === "360p")
+    if (p_360) return p_360.url
+  }
 
   return (
     <View
@@ -68,25 +111,19 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
       ) : (
         <VideoPlayer
           style={{ height: hp(35), marginTop: hp(2) }}
-          uri={(function () {
-            const uri = streamingLinkData?.sources.find(
-              (item) => item.quality === "1080p"
-            )?.url as string
-            if (!uri) {
-              return streamingLinkData?.sources[0].url as string
-            }
-            return uri
-          })()}
+          uri={extractBestStreamingUrl(streamingLinkData?.sources) as string}
         />
       )}
+
       <FlatList
         ref={listRef}
         data={data?.episodes}
         // estimatedItemSize={30}
+        ListHeaderComponent={<EpisodeDescription data={data} />}
         showsVerticalScrollIndicator={false}
         getItemLayout={(data, index) => ({
-          length: hp(5) + hp(3),
-          offset: (hp(5) + hp(3)) * index,
+          length: hp(6) + hp(3),
+          offset: (hp(6) + hp(3)) * index,
           index,
         })}
         keyboardShouldPersistTaps="always"
@@ -108,11 +145,11 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
                 style={{
                   backgroundColor:
                     item.id === selectedEpisodeId
-                      ? COLORS.copper
-                      : COLORS.brass,
-                  width: wp(85),
-                  height: hp(5),
-                  borderRadius: wp(1.5),
+                      ? COLORS.brass
+                      : COLORS.gunmetal,
+                  width: wp(90),
+                  height: hp(6),
+                  borderRadius: wp(5),
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "space-between",

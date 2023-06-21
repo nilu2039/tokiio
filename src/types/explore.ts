@@ -62,3 +62,22 @@ export const AnimeInfoSchema = z.object({
   episodes: z.array(EpisodeSchema),
 })
 export type AnimeInfo = z.infer<typeof AnimeInfoSchema>
+
+//search-anime
+
+export const SearchResultSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  url: z.string(),
+  image: z.string(),
+  releaseDate: z.string(),
+  subOrDub: z.string(),
+})
+export type SearchResult = z.infer<typeof SearchResultSchema>
+
+export const AnimeSearchSchema = z.object({
+  currentPage: z.string(),
+  hasNextPage: z.boolean(),
+  results: z.array(SearchResultSchema),
+})
+export type AnimeSearch = z.infer<typeof AnimeSearchSchema>
