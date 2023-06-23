@@ -10,7 +10,7 @@ export const TopAiringResultSchema = z.object({
 })
 
 export const TopAiringSchema = z.object({
-  currentPage: z.number(),
+  currentPage: z.string(),
   hasNextPage: z.boolean(),
   results: z.array(TopAiringResultSchema),
 })
@@ -29,7 +29,7 @@ export const RecentEpisodesResultSchema = z.object({
 })
 
 export const RecentEpisodesSchema = z.object({
-  currentPage: z.number(),
+  currentPage: z.string(),
   hasNextPage: z.boolean(),
   results: z.array(RecentEpisodesResultSchema),
 })

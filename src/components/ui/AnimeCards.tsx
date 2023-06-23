@@ -34,7 +34,7 @@ const AnimeCard: FC<AnimeCardsProps> = ({
           width: wp(40),
           backgroundColor: "lightgray",
           borderRadius: wp(2),
-          borderBottomLeftRadius: 0,
+          borderBottomLeftRadius: episodeNumber ? 0 : wp(2),
         },
         containerStyle,
       ]}
@@ -48,7 +48,7 @@ const AnimeCard: FC<AnimeCardsProps> = ({
             marginBottom: hp(1.5),
             position: "relative",
             borderRadius: wp(2),
-            borderBottomLeftRadius: 0,
+            borderBottomLeftRadius: episodeNumber ? 0 : wp(2),
           }}
         />
         {episodeNumber ? (

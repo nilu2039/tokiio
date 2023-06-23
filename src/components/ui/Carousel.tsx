@@ -36,7 +36,7 @@ interface CarouselProps {
   SLIDER_WIDTH: number
   ITEM_WIDTH: number
   ITEM_HEIGHT: number
-  data: TopAiringResult[]
+  data: TopAiringResult[] | undefined
 }
 
 interface ThumbNailProps {
@@ -102,7 +102,7 @@ const Carousel: React.FC<CarouselProps> = ({
             height: ITEM_HEIGHT,
             borderRadius: wp(2),
           }}
-          source={{ uri: item.image }}
+          source={{ uri: item?.image }}
         >
           <LinearGradient
             style={{
@@ -125,7 +125,7 @@ const Carousel: React.FC<CarouselProps> = ({
                   fontWeight: "600",
                 }}
               >
-                {item.title ? item.title : startCase(item.id)}
+                {item?.title ? item?.title : startCase(item?.id)}
               </Text>
               <UIButton
                 containerStyle={{
@@ -138,11 +138,11 @@ const Carousel: React.FC<CarouselProps> = ({
                 }}
                 onPress={() =>
                   navigation.navigate("Player", {
-                    id: item.id,
-                    title: item.title ? item.title : startCase(item.id),
-                    image: item.image,
-                    url: item.url,
-                    genres: item.genres,
+                    id: item?.id,
+                    title: item?.title ? item?.title : startCase(item?.id),
+                    image: item?.image,
+                    url: item?.url,
+                    genres: item?.genres,
                   })
                 }
                 label="Play Now"

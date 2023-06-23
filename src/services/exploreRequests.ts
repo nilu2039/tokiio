@@ -16,11 +16,12 @@ import { StreamingLinks, StreamingLinksSchema } from "../types/streaming"
 export const getTopAiring = async ({ page = 1 }): Promise<TopAiring | null> => {
   try {
     const { data } = await axios.get(`${BASE_URL}/top-airing?page=${page}`)
+    // console.log(data.results[0])
     TopAiringSchema.parse(data)
     return data
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log("type parsing error")
+      console.log("top airing type parsing error", error)
       return null
     }
     throw error
@@ -36,7 +37,7 @@ export const getRecentEpisodes = async ({
     return data
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log("type parsing error")
+      console.log("recent episode type parsing error")
       return null
     }
     throw error
@@ -50,7 +51,7 @@ export const getAnimeInfo = async ({ id = "" }): Promise<AnimeInfo | null> => {
     return data
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log("type parsing error")
+      console.log("get info type parsing error")
       return null
     }
     throw error
@@ -70,7 +71,7 @@ export const getStreamingLinks = async ({
     return data
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log("type parsing error")
+      console.log("streaming links type parsing error")
       return null
     }
     throw error
@@ -101,7 +102,7 @@ export const searchAnime = async ({
     return data
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log("type parsing error")
+      console.log("search type parsing error")
       return null
     }
     if (axios.isCancel(error)) {

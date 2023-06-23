@@ -1,5 +1,11 @@
-import { View, ActivityIndicator } from "react-native"
-import React from "react"
+import {
+  View,
+  ActivityIndicator,
+  Modal,
+  Pressable as TouchableOpacity,
+  Text,
+} from "react-native"
+import React, { useState } from "react"
 import Carousel from "../../components/ui/Carousel"
 import { HEIGHT, WIDTH } from "../../utils/dimensions"
 import { useInfiniteQuery } from "react-query"
@@ -11,6 +17,7 @@ import {
 } from "react-native-responsive-screen"
 import { COLORS } from "../../config/colors"
 import GradientText from "../../components/ui/GradientText"
+import TopAiringModal from "./TopAiringModal"
 
 const SLIDER_WIDTH = WIDTH
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.8)
@@ -18,6 +25,8 @@ const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.8)
 const ITEM_HEIGHT = Math.round(hp(30))
 
 const TopCardSection = () => {
+  const [modalVisible, setModalVisible] = useState(false)
+
   const { data, isLoading, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: "top-airing",
@@ -25,7 +34,7 @@ const TopCardSection = () => {
       getNextPageParam: (lastPage) => {
         if (lastPage?.currentPage) {
           if (lastPage.hasNextPage) {
-            return lastPage?.currentPage + 1
+            return parseInt(lastPage?.currentPage) + 1
           }
         } else return 1
       },
@@ -45,10 +54,36 @@ const TopCardSection = () => {
         top: 0,
       }}
     >
-      <GradientText
-        label="Top Airing"
-        style={{ marginTop: hp(2), paddingLeft: wp(10) }}
-      />
+      <Modal animationType="fade" transparent={true} visible={modalVisible}>
+        <TopAiringModal setModalVisible={setModalVisible} />
+      </Modal>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          marginTop: hp(2),
+          justifyContent: "space-between",
+          paddingHorizontal: wp(10),
+          zIndex: 999,
+        }}
+      >
+        <GradientText label="Top Airing" />
+
+        <TouchableOpacity
+          style={{
+            borderColor: "gray",
+            borderWidth: wp(0.2),
+            paddingVertical: wp(0.7),
+            paddingHorizontal: wp(3),
+            borderRadius: wp(10),
+          }}
+          onPress={() => {
+            setModalVisible(true)
+          }}
+        >
+          <Text style={{ color: COLORS.white, fontWeight: "bold" }}>More</Text>
+        </TouchableOpacity>
+      </View>
       <Carousel
         style={{
           width: ITEM_WIDTH,
@@ -62,7 +97,11 @@ const TopCardSection = () => {
         SLIDER_WIDTH={SLIDER_WIDTH}
         ITEM_HEIGHT={ITEM_HEIGHT}
         ITEM_WIDTH={ITEM_WIDTH}
-        data={data?.pages.flatMap((item) => item?.results) as TopAiringResult[]}
+        data={
+          data?.pages.flatMap((item) => item?.results) as
+            | TopAiringResult[]
+            | undefined
+        }
       />
     </View>
   )

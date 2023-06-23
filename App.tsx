@@ -5,6 +5,9 @@ import HomeScreen from "./src/screens/HomeScreen/HomeScreen"
 import Player from "./src/screens/Player/Player"
 import type { TopAiringResult } from "./src/types/explore"
 import Search from "./src/screens/Search/Search"
+import RecentEpisodesScreen from "./src/screens/RecentEpisodes/RecentEpisodesScreen"
+import { StatusBar } from "expo-status-bar"
+import { Platform } from "react-native"
 
 export type RootStackProps = {
   HomeScreen: undefined
@@ -12,6 +15,7 @@ export type RootStackProps = {
   Search: {
     searchQuery: string
   }
+  RecentEpisodes: undefined
 }
 
 const Stack = createNativeStackNavigator<RootStackProps>()
@@ -21,6 +25,7 @@ const queryClient = new QueryClient()
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
       <NavigationContainer
         theme={{
           ...DefaultTheme,
@@ -40,10 +45,6 @@ export default function App() {
           <Stack.Screen
             options={{
               headerShown: false,
-              statusBarColor: "#000",
-              headerStyle: {
-                backgroundColor: "#000",
-              },
             }}
             name="Player"
             component={Player}
@@ -52,6 +53,11 @@ export default function App() {
             options={{ headerShown: false }}
             name="Search"
             component={Search}
+          />
+          <Stack.Screen
+            options={{ headerShown: false }}
+            name="RecentEpisodes"
+            component={RecentEpisodesScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>

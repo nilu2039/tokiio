@@ -1,5 +1,12 @@
-import React from "react"
-import { ActivityIndicator, ScrollView, View } from "react-native"
+import React, { useState } from "react"
+import {
+  ActivityIndicator,
+  Modal,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native"
 import { FlatList } from "react-native-gesture-handler"
 import {
   heightPercentageToDP as hp,
@@ -18,6 +25,8 @@ import type {
   RecentEpisodesResult,
   RecentEpisodes as RecentEpisodesType,
 } from "../../types/explore"
+import { COLORS } from "../../config/colors"
+import RecentEpisodeModal from "./RecentEpisodeModal"
 
 interface RecentEpisodeCardProps {
   data: RecentEpisodesResult[] | []
@@ -141,6 +150,9 @@ const RecentEpisodesCard: React.FC<RecentEpisodeCardProps> = ({
 }
 
 const RecentEpisodes = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackProps, "Player">>()
+
   const { data, isLoading, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: "recent-episodes",
@@ -148,7 +160,7 @@ const RecentEpisodes = () => {
       getNextPageParam: (lastPage) => {
         if (lastPage?.currentPage) {
           if (lastPage.hasNextPage) {
-            return lastPage?.currentPage + 1
+            return parseInt(lastPage?.currentPage) + 1
           }
         } else return 1
       },
@@ -167,17 +179,25 @@ const RecentEpisodes = () => {
           // marginTop: hp(5),
           justifyContent: "space-between",
           paddingHorizontal: wp(10),
+          marginTop: hp(2),
+          zIndex: 999,
         }}
       >
         <GradientText label="Recent Episodes" />
-        {/* <View style={{ flexDirection: "row", gap: wp(8) }}>
-          <FontAwesome
-            onPress={() => fetchNextPage()}
-            name="angle-right"
-            size={24}
-            color={COLORS.white}
-          />
-        </View> */}
+        <TouchableOpacity
+          style={{
+            borderColor: "gray",
+            borderWidth: wp(0.2),
+            paddingVertical: wp(0.7),
+            paddingHorizontal: wp(3),
+            borderRadius: wp(10),
+          }}
+          onPress={() => {
+            navigation.navigate("RecentEpisodes")
+          }}
+        >
+          <Text style={{ color: COLORS.white, fontWeight: "bold" }}>More</Text>
+        </TouchableOpacity>
       </View>
       <RecentEpisodesCard
         fetchNextPage={fetchNextPage}

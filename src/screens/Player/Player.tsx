@@ -1,25 +1,23 @@
-import type { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { LinearGradient } from "expo-linear-gradient"
-import React from "react"
-import { ActivityIndicator, Pressable, ScrollView, Text } from "react-native"
-import { RootStackProps } from "../../../App"
-import { WIDTH } from "../../utils/dimensions"
-import { useQuery } from "react-query"
-import { getAnimeInfo } from "../../services/exploreRequests"
-import EpisodeList from "./EpisodeList"
-import { SafeAreaView } from "react-native-safe-area-context"
-import GradientText from "../../components/ui/GradientText"
-import { View } from "react-native"
 import { FontAwesome } from "@expo/vector-icons"
+import type { NativeStackScreenProps } from "@react-navigation/native-stack"
+import React from "react"
+import { ActivityIndicator, View } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
+import { useQuery } from "react-query"
+import { RootStackProps } from "../../../App"
+import GradientText from "../../components/ui/GradientText"
+import { getAnimeInfo } from "../../services/exploreRequests"
+import { WIDTH } from "../../utils/dimensions"
+import EpisodeList from "./EpisodeList"
 
+import { useNavigation } from "@react-navigation/native"
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
-import { COLORS } from "../../config/colors"
-import { useNavigation } from "@react-navigation/native"
 import { ZodError, z } from "zod"
-import { rotate } from "@shopify/react-native-skia"
+import GradientBackground from "../../components/ui/GradientBackground"
+import { COLORS } from "../../config/colors"
 
 type PlayerRouteProps = NativeStackScreenProps<RootStackProps, "Player">
 
@@ -52,15 +50,7 @@ const Player: React.FC<PlayerRouteProps> = ({ route }) => {
   }
 
   return (
-    <LinearGradient
-      colors={["#472315", "#000", "#000"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{
-        flex: 1,
-        width: WIDTH,
-      }}
-    >
+    <GradientBackground>
       <SafeAreaView>
         <View
           style={{
@@ -88,7 +78,7 @@ const Player: React.FC<PlayerRouteProps> = ({ route }) => {
         </View>
         <EpisodeList episodeId={route.params?.episodeId} data={data} />
       </SafeAreaView>
-    </LinearGradient>
+    </GradientBackground>
   )
 }
 

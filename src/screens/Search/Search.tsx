@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { startCase } from "lodash"
 import { LinearGradient } from "expo-linear-gradient"
 import GradientText from "../../components/ui/GradientText"
+import GradientBackground from "../../components/ui/GradientBackground"
 
 type SearchRouteProps = NativeStackScreenProps<RootStackProps, "Search">
 
@@ -30,6 +31,7 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
     data: searchData,
     isLoading: searchDataLoading,
     fetchNextPage,
+    isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: "search-anime",
     cacheTime: 0,
@@ -53,16 +55,8 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
   }
 
   return (
-    <LinearGradient
-      colors={["#472315", "#000", "#000"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{
-        flex: 1,
-        width: WIDTH,
-      }}
-    >
-      <SafeAreaView>
+    <GradientBackground>
+      <SafeAreaView style={{ flex: 1 }}>
         <View
           style={{
             marginVertical: hp(2),
@@ -88,11 +82,14 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
             }
           />
         </View>
-        <View style={{ height: HEIGHT - insets.top - hp(3) - hp(7) }}>
+        <View style={{ flex: 1 }}>
           <FlashList
             data={searchData?.pages.flatMap((item) => item?.results)}
             estimatedItemSize={200}
             numColumns={2}
+            ListFooterComponent={
+              <View>{isFetchingNextPage ? <ActivityIndicator /> : null}</View>
+            }
             onEndReached={() => {
               fetchNextPage()
             }}
@@ -119,7 +116,7 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
           />
         </View>
       </SafeAreaView>
-    </LinearGradient>
+    </GradientBackground>
   )
 }
 
