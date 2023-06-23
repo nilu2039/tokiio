@@ -90,7 +90,7 @@ const TopCardSection = () => {
           height: ITEM_HEIGHT,
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "lightgray",
+          backgroundColor: "transparent",
           marginTop: hp(8),
           borderRadius: wp(2),
         }}

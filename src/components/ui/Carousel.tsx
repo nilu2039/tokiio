@@ -1,6 +1,12 @@
-import { View, Text, Image, ImageBackground } from "react-native"
+import {
+  View,
+  Text,
+  Image,
+  ImageBackground,
+  ActivityIndicator,
+} from "react-native"
 import type { StyleProp, ViewStyle } from "react-native"
-import React from "react"
+import React, { useState } from "react"
 import CardCarousel from "react-native-snap-carousel"
 import type { TopAiringResult } from "../../types/explore"
 import { startCase } from "lodash"
@@ -86,6 +92,7 @@ const Carousel: React.FC<CarouselProps> = ({
   data = [],
 }) => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackProps>>()
+  const [imageBackgroundLoading, setImageBackgroundLoading] = useState(true)
 
   const _renderItem = ({
     item,
@@ -97,6 +104,7 @@ const Carousel: React.FC<CarouselProps> = ({
     return (
       <View style={style}>
         <ImageBackground
+          onLoadEnd={() => setImageBackgroundLoading(false)}
           style={{
             width: ITEM_WIDTH,
             height: ITEM_HEIGHT,
@@ -115,6 +123,18 @@ const Carousel: React.FC<CarouselProps> = ({
             end={{ x: 1, y: 0 }}
             colors={["#000", "transparent"]}
           >
+            {imageBackgroundLoading ? (
+              <View
+                style={{
+                  height: ITEM_HEIGHT - wp(5),
+                  width: ITEM_WIDTH,
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <ActivityIndicator color={COLORS.white} size={wp(20)} />
+              </View>
+            ) : null}
             <View style={{ padding: wp(5), gap: hp(1.5) }}>
               <Text
                 numberOfLines={2}

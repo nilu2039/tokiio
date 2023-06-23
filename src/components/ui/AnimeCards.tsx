@@ -1,15 +1,17 @@
-import React, { FC } from "react"
+import React, { FC, useState } from "react"
 import type { StyleProp, TextStyle } from "react-native"
-import { Image, Pressable, Text, View } from "react-native"
+import { ActivityIndicator, Image, Pressable, Text, View } from "react-native"
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
 import { COLORS } from "../../config/colors"
 import { ViewStyle } from "react-native"
+import { startCase } from "lodash"
 
 interface AnimeCardsProps {
   title: string
+  id: string | undefined
   imageUri: string
   episodeNumber?: number
   onPress?: () => void
@@ -18,6 +20,7 @@ interface AnimeCardsProps {
 }
 
 const AnimeCard: FC<AnimeCardsProps> = ({
+  id,
   title,
   imageUri,
   episodeNumber,
@@ -25,6 +28,7 @@ const AnimeCard: FC<AnimeCardsProps> = ({
   titleStyle,
   containerStyle,
 }) => {
+  const [imageBackgroundLoading, setImageBackgroundLoading] = useState(true)
   return (
     <Pressable
       onPress={onPress}
@@ -32,7 +36,9 @@ const AnimeCard: FC<AnimeCardsProps> = ({
         {
           height: hp(25),
           width: wp(40),
-          backgroundColor: "lightgray",
+          backgroundColor: "transparent",
+          borderColor: "gray",
+          borderWidth: wp(0.1),
           borderRadius: wp(2),
           borderBottomLeftRadius: episodeNumber ? 0 : wp(2),
         },
@@ -40,17 +46,37 @@ const AnimeCard: FC<AnimeCardsProps> = ({
       ]}
     >
       <View style={{ marginBottom: hp(1.2) }}>
-        <Image
-          source={{ uri: imageUri }}
+        <View
           style={{
             width: wp(40),
             height: hp(25),
             marginBottom: hp(1.5),
             position: "relative",
-            borderRadius: wp(2),
-            borderBottomLeftRadius: episodeNumber ? 0 : wp(2),
           }}
-        />
+        >
+          <Image
+            source={{ uri: imageUri }}
+            onLoadEnd={() => setImageBackgroundLoading(false)}
+            style={{
+              width: wp(40),
+              height: hp(25),
+              marginBottom: hp(1.5),
+              position: "relative",
+              borderRadius: wp(2),
+              borderBottomLeftRadius: episodeNumber ? 0 : wp(2),
+            }}
+          />
+          {imageBackgroundLoading ? (
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ActivityIndicator color={COLORS.white} size={wp(20)} />
+            </View>
+          ) : null}
+        </View>
         {episodeNumber ? (
           <View
             style={{
@@ -88,7 +114,7 @@ const AnimeCard: FC<AnimeCardsProps> = ({
           titleStyle,
         ]}
       >
-        {title}
+        {title ? title : startCase(id)}
       </Text>
     </Pressable>
   )

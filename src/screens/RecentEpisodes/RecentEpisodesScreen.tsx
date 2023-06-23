@@ -61,6 +61,7 @@ const RecentEpisodesScreen: FC<RecentEpisodesScreen> = ({}) => {
             data={data?.pages.flatMap((item) => item?.results)}
             estimatedItemSize={200}
             numColumns={2}
+            onEndReachedThreshold={0.1}
             onEndReached={() => {
               fetchNextPage()
             }}
@@ -70,6 +71,7 @@ const RecentEpisodesScreen: FC<RecentEpisodesScreen> = ({}) => {
             ItemSeparatorComponent={() => <View style={{ height: hp(10) }} />}
             renderItem={({ item }) => (
               <AnimeCard
+                id={item?.id}
                 containerStyle={{ marginLeft: wp(4.6) }}
                 title={item?.title as string}
                 imageUri={item?.image as string}

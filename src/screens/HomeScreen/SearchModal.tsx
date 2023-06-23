@@ -123,6 +123,7 @@ const SearchAnimeTextInput = () => {
                   )}
                   renderItem={({ item }) => (
                     <AnimeCard
+                      id={item.id}
                       containerStyle={{ marginLeft: wp(4.6) }}
                       title={item?.title as string}
                       imageUri={item?.image as string}

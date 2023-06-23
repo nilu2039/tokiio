@@ -87,6 +87,7 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
             data={searchData?.pages.flatMap((item) => item?.results)}
             estimatedItemSize={200}
             numColumns={2}
+            onEndReachedThreshold={0.1}
             ListFooterComponent={
               <View>{isFetchingNextPage ? <ActivityIndicator /> : null}</View>
             }
@@ -96,6 +97,7 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
             ItemSeparatorComponent={() => <View style={{ height: hp(10) }} />}
             renderItem={({ item }) => (
               <AnimeCard
+                id={item?.id}
                 containerStyle={{ marginLeft: wp(4.6) }}
                 title={item?.title as string}
                 imageUri={item?.image as string}

@@ -125,6 +125,7 @@ const RecentEpisodesCard: React.FC<RecentEpisodeCardProps> = ({
             //   </Text>
             // </Pressable>
             <AnimeCard
+              id={item.id}
               title={item.title}
               imageUri={item.image}
               episodeNumber={item.episodeNumber}
