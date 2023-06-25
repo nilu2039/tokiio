@@ -99,6 +99,7 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
             renderItem={({ item }) => (
               <AnimeCard
                 id={item?.id}
+                status={item?.status}
                 containerStyle={{ marginLeft: wp(4.6) }}
                 title={
                   item?.title?.english

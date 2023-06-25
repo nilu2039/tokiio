@@ -8,6 +8,7 @@ import {
 import { COLORS } from "../../config/colors"
 import { ViewStyle } from "react-native"
 import { startCase } from "lodash"
+import { Status } from "../../types/explore"
 
 interface AnimeCardsProps {
   title: string | null | undefined
@@ -17,6 +18,7 @@ interface AnimeCardsProps {
   onPress?: () => void
   titleStyle?: StyleProp<TextStyle>
   containerStyle?: StyleProp<ViewStyle>
+  status?: Status | null | undefined
 }
 
 const AnimeCard: FC<AnimeCardsProps> = ({
@@ -27,11 +29,13 @@ const AnimeCard: FC<AnimeCardsProps> = ({
   onPress,
   titleStyle,
   containerStyle,
+  status,
 }) => {
   const [imageBackgroundLoading, setImageBackgroundLoading] = useState(true)
   return (
     <Pressable
       onPress={onPress}
+      disabled={status === "Not yet aired"}
       style={[
         {
           height: hp(25),

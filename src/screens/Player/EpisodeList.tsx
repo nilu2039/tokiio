@@ -1,36 +1,30 @@
-import { Foundation } from "@expo/vector-icons"
-import React, { FC, useEffect, useRef, useState } from "react"
-import {
-  ActivityIndicator,
-  FlatList,
-  Image,
-  Pressable,
-  Text,
-  View,
-} from "react-native"
+import React, { FC, useRef, useState } from "react"
+import { ActivityIndicator, FlatList, Text, View } from "react-native"
 import { HEIGHT, WIDTH } from "../../utils/dimensions"
 
+import { FlashList } from "@shopify/flash-list"
+import { useQuery } from "@tanstack/react-query"
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useQuery } from "@tanstack/react-query"
 import VideoPlayer from "../../components/ui/VideoPlayer"
 import { COLORS } from "../../config/colors"
 import { getStreamingLinks } from "../../services/exploreRequests"
 import { AnimeInfo, AnimeInfoEpisode } from "../../types/explore"
-import EpisodeDescription from "./EpisodeDescription"
+import EpisodeCard from "./EpisodeCard"
+import EpisodeHeader from "./EpisodeHeader"
 
 interface EpisodeListProps {
   data: AnimeInfo | null | undefined
   episodeId?: string
 }
 
-const PER_PAGE_LIMIT = 100
+const PER_PAGE_LIMIT = 200
 
 const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
-  if (data?.episodes?.length === 0) {
+  if (data?.episodes?.length === 0 || !data?.episodes) {
     return (
       <View
         style={{
@@ -42,7 +36,7 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
         <Text
           style={{ color: COLORS.white, fontSize: wp(12), fontWeight: "600" }}
         >
-          {data.status}
+          {data?.status}
         </Text>
       </View>
     )
@@ -54,6 +48,7 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
   )
   const [firstView, setFirstView] = useState(true)
   const [selectedIndex, setSelectedIndex] = useState(1)
+  const [currentEpisodeSlab, setCurrentEpisodeSlab] = useState(0)
 
   const listRef = useRef<FlatList>(null)
   // const scrollToIndex = (index: number) => {
@@ -117,24 +112,23 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
           uri={extractBestStreamingUrl(streamingLinkData?.sources) as string}
         />
       )}
-      <View></View>
-      <FlatList
-        ref={listRef}
-        data={data?.episodes.slice(0, PER_PAGE_LIMIT)}
-        // estimatedItemSize={30}
-        ListHeaderComponent={
-          <View>
-            <EpisodeDescription data={data} />
-          </View>
-        }
-        // stickyHeaderIndices={[selectedIndex]}
-        showsVerticalScrollIndicator={false}
-        // getItemLayout={(data, index) => ({
-        //   length: hp(6) + hp(3),
-        //   offset: (hp(6) + hp(3)) * index,
-        //   index,
-        // })}
 
+      <FlashList
+        // ref={listRef}
+        estimatedItemSize={200}
+        data={data?.episodes.slice(
+          currentEpisodeSlab,
+          PER_PAGE_LIMIT + currentEpisodeSlab
+        )}
+        ListHeaderComponent={
+          <EpisodeHeader
+            data={data}
+            PER_PAGE_LIMIT={PER_PAGE_LIMIT}
+            currentEpisodeSlab={currentEpisodeSlab}
+            setCurrentEpisodeSlab={setCurrentEpisodeSlab}
+          />
+        }
+        showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="always"
         ItemSeparatorComponent={() => <View style={{ height: hp(3) }} />}
         contentContainerStyle={{ paddingBottom: insets.top }}
@@ -147,56 +141,11 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
         }) => {
           return (
             <>
-              <Pressable
-                onPress={() => {
-                  setSelectedEpisodeId(item.id)
-                  setSelectedIndex(index + 1)
-                }}
-                style={{
-                  width: WIDTH,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <View
-                  style={{
-                    backgroundColor:
-                      item.id === selectedEpisodeId
-                        ? COLORS.brass
-                        : COLORS.gunmetal,
-                    width: wp(90),
-                    height: hp(5),
-                    borderRadius: wp(5),
-                    borderColor: "gray",
-                    borderWidth: wp(0.2),
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    paddingHorizontal: wp(8),
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: COLORS.white,
-                      fontWeight: "500",
-                    }}
-                  >
-                    {item.number}
-                  </Text>
-                  <Text
-                    numberOfLines={1}
-                    style={{
-                      color: COLORS.white,
-                      width: wp(57),
-                      textAlign: "center",
-                      fontWeight: "500",
-                    }}
-                  >{`${
-                    item?.title ? item.title : `Episode ${item.number}`
-                  }`}</Text>
-                  <Foundation name="play" size={24} color={COLORS.white} />
-                </View>
-              </Pressable>
+              <EpisodeCard
+                item={item}
+                selectedEpisodeId={selectedEpisodeId}
+                setSelectedEpisodeId={setSelectedEpisodeId}
+              />
             </>
           )
         }}

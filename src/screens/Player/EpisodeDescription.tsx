@@ -64,7 +64,12 @@ const KeyMapper = ({
 const EpisodeDescription: FC<EpisodeDescriptionProps> = ({ data }) => {
   return (
     <View
-      style={{ marginHorizontal: wp(3), gap: hp(2), marginVertical: hp(4) }}
+      style={{
+        marginHorizontal: wp(3),
+        gap: hp(2),
+        marginTop: hp(4),
+        marginBottom: hp(2),
+      }}
     >
       <View
         style={{

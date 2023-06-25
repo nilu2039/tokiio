@@ -121,25 +121,30 @@ const SearchAnimeTextInput = () => {
                   ItemSeparatorComponent={() => (
                     <View style={{ height: hp(10) }} />
                   )}
-                  renderItem={({ item }) => (
-                    <AnimeCard
-                      id={item.id}
-                      containerStyle={{ marginLeft: wp(4.6) }}
-                      title={
-                        item?.title?.english
-                          ? item?.title?.english
-                          : item?.title?.romaji
-                      }
-                      imageUri={item?.image as string}
-                      titleStyle={{ textAlign: "center" }}
-                      onPress={() => {
-                        setModalVisible(false)
-                        navigation.navigate("Player", {
-                          ...item,
-                        })
-                      }}
-                    />
-                  )}
+                  renderItem={
+                    ({ item }) => (
+                      // item.status !== "Not yet aired" ? (
+                      <AnimeCard
+                        id={item.id}
+                        status={item.status}
+                        containerStyle={{ marginLeft: wp(4.6) }}
+                        title={
+                          item?.title?.english
+                            ? item?.title?.english
+                            : item?.title?.romaji
+                        }
+                        imageUri={item?.image as string}
+                        titleStyle={{ textAlign: "center" }}
+                        onPress={() => {
+                          setModalVisible(false)
+                          navigation.navigate("Player", {
+                            ...item,
+                          })
+                        }}
+                      />
+                    )
+                    // ) : null
+                  }
                 />
               ) : searchQuery ? (
                 <View
