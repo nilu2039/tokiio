@@ -28,6 +28,22 @@ export const getTopAiring = async ({ page = 1 }): Promise<TopAiring | null> => {
   }
 }
 
+export const getPopularAnime = async ({
+  page = 1,
+}): Promise<TopAiring | null> => {
+  try {
+    const { data } = await axios.get(`${BASE_URL}/popular-anime?page=${page}`)
+    TopAiringSchema.parse(data)
+    return data
+  } catch (error) {
+    if (error instanceof ZodError) {
+      console.log("popular anime type parsing error", error)
+      return null
+    }
+    throw error
+  }
+}
+
 export const getRecentEpisodes = async ({
   page = 1,
 }): Promise<RecentEpisodes | null> => {
@@ -37,7 +53,7 @@ export const getRecentEpisodes = async ({
     return data
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log("recent episode type parsing error")
+      console.log("recent episode type parsing error", error)
       return null
     }
     throw error
@@ -51,7 +67,7 @@ export const getAnimeInfo = async ({ id = "" }): Promise<AnimeInfo | null> => {
     return data
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log("get info type parsing error")
+      console.log("get info type parsing error", error)
       return null
     }
     throw error
@@ -61,7 +77,7 @@ export const getAnimeInfo = async ({ id = "" }): Promise<AnimeInfo | null> => {
 export const getStreamingLinks = async ({
   episodeId,
 }: {
-  episodeId: string | undefined
+  episodeId: string | null
 }): Promise<StreamingLinks | null> => {
   try {
     const { data } = await axios.get(
@@ -71,7 +87,7 @@ export const getStreamingLinks = async ({
     return data
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log("streaming links type parsing error")
+      console.log("streaming links type parsing error", error)
       return null
     }
     throw error
@@ -86,7 +102,7 @@ export const searchAnime = async ({
 }: {
   searchQuery: string | undefined
   page: number
-}): Promise<AnimeSearch | null> => {
+}): Promise<TopAiring | null> => {
   try {
     if (searchCancelToken) {
       searchCancelToken.cancel("operation cancelled")
@@ -98,11 +114,11 @@ export const searchAnime = async ({
       `${BASE_URL}/search?name=${searchQuery}&page=${page}`,
       { cancelToken: searchCancelToken.token }
     )
-    AnimeSearchSchema.parse(data)
+    TopAiringSchema.parse(data)
     return data
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log("search type parsing error")
+      console.log("search type parsing error", error)
       return null
     }
     if (axios.isCancel(error)) {

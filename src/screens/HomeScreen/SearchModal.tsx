@@ -18,7 +18,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { FlashList } from "@shopify/flash-list"
 import { startCase } from "lodash"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import { RootStackProps } from "../../../App"
 import AnimeCard from "../../components/ui/AnimeCards"
 import { COLORS } from "../../config/colors"
@@ -125,25 +125,23 @@ const SearchAnimeTextInput = () => {
                     <AnimeCard
                       id={item.id}
                       containerStyle={{ marginLeft: wp(4.6) }}
-                      title={item?.title as string}
+                      title={
+                        item?.title?.english
+                          ? item?.title?.english
+                          : item?.title?.romaji
+                      }
                       imageUri={item?.image as string}
                       titleStyle={{ textAlign: "center" }}
                       onPress={() => {
                         setModalVisible(false)
                         navigation.navigate("Player", {
-                          id: item?.id as string,
-                          title: item?.title
-                            ? item?.title
-                            : (startCase(item?.id) as string),
-                          image: item?.image as string,
-                          url: item?.url as string,
-                          genres: [],
+                          ...item,
                         })
                       }}
                     />
                   )}
                 />
-              ) : (
+              ) : searchQuery ? (
                 <View
                   style={{
                     width: wp(100),
@@ -154,7 +152,7 @@ const SearchAnimeTextInput = () => {
                 >
                   <ActivityIndicator size={wp(20)} />
                 </View>
-              )}
+              ) : null}
             </View>
           </SafeAreaView>
         </Modal>

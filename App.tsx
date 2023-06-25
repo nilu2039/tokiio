@@ -1,21 +1,21 @@
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
-import { QueryClient, QueryClientProvider } from "react-query"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import HomeScreen from "./src/screens/HomeScreen/HomeScreen"
 import Player from "./src/screens/Player/Player"
 import type { TopAiringResult } from "./src/types/explore"
 import Search from "./src/screens/Search/Search"
-import RecentEpisodesScreen from "./src/screens/RecentEpisodes/RecentEpisodesScreen"
+import PopularAnimeScreen from "./src/screens/PopularAnime/PopularAnimeScreen"
 import { StatusBar } from "expo-status-bar"
 import { Platform } from "react-native"
 
 export type RootStackProps = {
   HomeScreen: undefined
-  Player: (TopAiringResult & { episodeId?: string }) | undefined
+  Player: TopAiringResult | undefined
   Search: {
     searchQuery: string
   }
-  RecentEpisodes: undefined
+  PopularAnime: undefined
 }
 
 const Stack = createNativeStackNavigator<RootStackProps>()
@@ -56,8 +56,8 @@ export default function App() {
           />
           <Stack.Screen
             options={{ headerShown: false }}
-            name="RecentEpisodes"
-            component={RecentEpisodesScreen}
+            name="PopularAnime"
+            component={PopularAnimeScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>

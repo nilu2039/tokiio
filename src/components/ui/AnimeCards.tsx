@@ -10,10 +10,10 @@ import { ViewStyle } from "react-native"
 import { startCase } from "lodash"
 
 interface AnimeCardsProps {
-  title: string
+  title: string | null | undefined
   id: string | undefined
-  imageUri: string
-  episodeNumber?: number
+  imageUri: string | null
+  episodeNumber?: number | null
   onPress?: () => void
   titleStyle?: StyleProp<TextStyle>
   containerStyle?: StyleProp<ViewStyle>
@@ -54,18 +54,20 @@ const AnimeCard: FC<AnimeCardsProps> = ({
             position: "relative",
           }}
         >
-          <Image
-            source={{ uri: imageUri }}
-            onLoadEnd={() => setImageBackgroundLoading(false)}
-            style={{
-              width: wp(40),
-              height: hp(25),
-              marginBottom: hp(1.5),
-              position: "relative",
-              borderRadius: wp(2),
-              borderBottomLeftRadius: episodeNumber ? 0 : wp(2),
-            }}
-          />
+          {imageUri ? (
+            <Image
+              source={{ uri: imageUri }}
+              onLoadEnd={() => setImageBackgroundLoading(false)}
+              style={{
+                width: wp(40),
+                height: hp(25),
+                marginBottom: hp(1.5),
+                position: "relative",
+                borderRadius: wp(2),
+                borderBottomLeftRadius: episodeNumber ? 0 : wp(2),
+              }}
+            />
+          ) : null}
           {imageBackgroundLoading ? (
             <View
               style={{
@@ -110,6 +112,7 @@ const AnimeCard: FC<AnimeCardsProps> = ({
             color: COLORS.white,
             fontSize: wp(4),
             fontWeight: "600",
+            textAlign: "center",
           },
           titleStyle,
         ]}

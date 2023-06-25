@@ -1,7 +1,10 @@
-import React, { useState } from "react"
+import {
+  InfiniteQueryObserverBaseResult,
+  useInfiniteQuery,
+} from "@tanstack/react-query"
+import React from "react"
 import {
   ActivityIndicator,
-  Modal,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -12,7 +15,6 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
-import { InfiniteQueryObserverBaseResult, useInfiniteQuery } from "react-query"
 
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
@@ -20,22 +22,22 @@ import { startCase } from "lodash"
 import { RootStackProps } from "../../../App"
 import AnimeCard from "../../components/ui/AnimeCards"
 import GradientText from "../../components/ui/GradientText"
-import { getRecentEpisodes } from "../../services/exploreRequests"
+import { COLORS } from "../../config/colors"
+import { getPopularAnime } from "../../services/exploreRequests"
 import type {
   RecentEpisodesResult,
-  RecentEpisodes as RecentEpisodesType,
+  TopAiring,
+  TopAiringResult,
 } from "../../types/explore"
-import { COLORS } from "../../config/colors"
-import RecentEpisodeModal from "./RecentEpisodeModal"
 
 interface RecentEpisodeCardProps {
-  data: RecentEpisodesResult[] | []
+  data: TopAiringResult[] | []
   fetchNextPage: () => Promise<
-    InfiniteQueryObserverBaseResult<RecentEpisodesType | null, unknown>
+    InfiniteQueryObserverBaseResult<TopAiring | null, unknown>
   >
 }
 
-const RecentEpisodesCard: React.FC<RecentEpisodeCardProps> = ({
+const PopularAnimeCard: React.FC<RecentEpisodeCardProps> = ({
   data = [],
   fetchNextPage,
 }) => {
@@ -126,20 +128,19 @@ const RecentEpisodesCard: React.FC<RecentEpisodeCardProps> = ({
             // </Pressable>
             <AnimeCard
               id={item.id}
-              title={item.title}
+              title={
+                item?.title?.english
+                  ? item?.title?.english
+                  : item?.title?.romaji
+              }
               imageUri={item.image}
-              episodeNumber={item.episodeNumber}
+              episodeNumber={item.totalEpisodes}
               containerStyle={{
                 marginHorizontal: wp(3),
               }}
               onPress={() => {
                 navigation.navigate("Player", {
-                  id: item.id,
-                  title: item.title ? item.title : startCase(item.id),
-                  image: item.image,
-                  url: item.url,
-                  genres: [],
-                  episodeId: item.episodeId,
+                  ...item,
                 })
               }}
             />
@@ -150,18 +151,18 @@ const RecentEpisodesCard: React.FC<RecentEpisodeCardProps> = ({
   )
 }
 
-const RecentEpisodes = () => {
+const PopularAnime = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackProps, "Player">>()
 
   const { data, isLoading, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: "recent-episodes",
-      queryFn: ({ pageParam = 1 }) => getRecentEpisodes({ page: pageParam }),
+      queryKey: ["popular-anime"],
+      queryFn: ({ pageParam = 1 }) => getPopularAnime({ page: pageParam }),
       getNextPageParam: (lastPage) => {
         if (lastPage?.currentPage) {
           if (lastPage.hasNextPage) {
-            return parseInt(lastPage?.currentPage) + 1
+            return lastPage?.currentPage + 1
           }
         } else return 1
       },
@@ -184,7 +185,7 @@ const RecentEpisodes = () => {
           zIndex: 999,
         }}
       >
-        <GradientText label="Recent Episodes" />
+        <GradientText label="Popular Anime" />
         <TouchableOpacity
           style={{
             borderColor: "gray",
@@ -194,20 +195,18 @@ const RecentEpisodes = () => {
             borderRadius: wp(10),
           }}
           onPress={() => {
-            navigation.navigate("RecentEpisodes")
+            navigation.navigate("PopularAnime")
           }}
         >
           <Text style={{ color: COLORS.white, fontWeight: "bold" }}>More</Text>
         </TouchableOpacity>
       </View>
-      <RecentEpisodesCard
+      <PopularAnimeCard
         fetchNextPage={fetchNextPage}
-        data={
-          data?.pages.flatMap((item) => item?.results) as RecentEpisodesResult[]
-        }
+        data={data?.pages.flatMap((item) => item?.results) as TopAiringResult[]}
       />
     </View>
   )
 }
 
-export default RecentEpisodes
+export default PopularAnime

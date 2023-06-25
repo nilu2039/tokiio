@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react"
 import Carousel from "../../components/ui/Carousel"
 import { HEIGHT, WIDTH } from "../../utils/dimensions"
-import { useInfiniteQuery } from "react-query"
+// import { useInfiniteQuery } from "@tanstack/react-query"
 import { getTopAiring } from "../../services/exploreRequests"
 import { TopAiringResult } from "../../types/explore"
 import {
@@ -18,6 +18,7 @@ import {
 import { COLORS } from "../../config/colors"
 import GradientText from "../../components/ui/GradientText"
 import TopAiringModal from "./TopAiringModal"
+import { useInfiniteQuery } from "@tanstack/react-query"
 
 const SLIDER_WIDTH = WIDTH
 const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.8)
@@ -29,12 +30,12 @@ const TopCardSection = () => {
 
   const { data, isLoading, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: "top-airing",
+      queryKey: ["top-airing"],
       queryFn: ({ pageParam = 1 }) => getTopAiring({ page: pageParam }),
       getNextPageParam: (lastPage) => {
         if (lastPage?.currentPage) {
           if (lastPage.hasNextPage) {
-            return parseInt(lastPage?.currentPage) + 1
+            return lastPage?.currentPage + 1
           }
         } else return 1
       },

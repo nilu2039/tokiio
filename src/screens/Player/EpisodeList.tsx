@@ -15,11 +15,11 @@ import {
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { useQuery } from "react-query"
+import { useQuery } from "@tanstack/react-query"
 import VideoPlayer from "../../components/ui/VideoPlayer"
 import { COLORS } from "../../config/colors"
 import { getStreamingLinks } from "../../services/exploreRequests"
-import { AnimeInfo } from "../../types/explore"
+import { AnimeInfo, AnimeInfoEpisode } from "../../types/explore"
 import EpisodeDescription from "./EpisodeDescription"
 
 interface EpisodeListProps {
@@ -27,8 +27,10 @@ interface EpisodeListProps {
   episodeId?: string
 }
 
+const PER_PAGE_LIMIT = 100
+
 const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
-  if (data?.episodes.length === 0) {
+  if (data?.episodes?.length === 0) {
     return (
       <View
         style={{
@@ -48,16 +50,17 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
 
   const insets = useSafeAreaInsets()
   const [selectedEpisodeId, setSelectedEpisodeId] = useState(
-    episodeId ? episodeId : data?.episodes[0].id
+    data?.episodes ? data?.episodes[0]?.id : ""
   )
   const [firstView, setFirstView] = useState(true)
+  const [selectedIndex, setSelectedIndex] = useState(1)
 
   const listRef = useRef<FlatList>(null)
-  const scrollToIndex = (index: number) => {
-    if (listRef.current) {
-      listRef.current.scrollToIndex({ index })
-    }
-  }
+  // const scrollToIndex = (index: number) => {
+  //   if (listRef.current) {
+  //     listRef.current.scrollToIndex({ index })
+  //   }
+  // }
 
   const { data: streamingLinkData, isLoading: isStreamingLinkLoading } =
     useQuery({
@@ -65,12 +68,12 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
       queryFn: () => getStreamingLinks({ episodeId: selectedEpisodeId }),
     })
 
-  if (firstView && listRef.current) {
-    if (episodeId) {
-      scrollToIndex(data?.totalEpisodes! - 1 || 0)
-      setFirstView(false)
-    }
-  }
+  // if (firstView && listRef.current) {
+  //   if (episodeId) {
+  //     scrollToIndex(data?.totalEpisodes! - 1 || 0)
+  //     setFirstView(false)
+  //   }
+  // }
 
   const extractBestStreamingUrl = (
     sources:
@@ -114,54 +117,87 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
           uri={extractBestStreamingUrl(streamingLinkData?.sources) as string}
         />
       )}
-
+      <View></View>
       <FlatList
         ref={listRef}
-        data={data?.episodes}
+        data={data?.episodes.slice(0, PER_PAGE_LIMIT)}
         // estimatedItemSize={30}
-        ListHeaderComponent={<EpisodeDescription data={data} />}
+        ListHeaderComponent={
+          <View>
+            <EpisodeDescription data={data} />
+          </View>
+        }
+        // stickyHeaderIndices={[selectedIndex]}
         showsVerticalScrollIndicator={false}
-        getItemLayout={(data, index) => ({
-          length: hp(6) + hp(3),
-          offset: (hp(6) + hp(3)) * index,
-          index,
-        })}
+        // getItemLayout={(data, index) => ({
+        //   length: hp(6) + hp(3),
+        //   offset: (hp(6) + hp(3)) * index,
+        //   index,
+        // })}
+
         keyboardShouldPersistTaps="always"
         ItemSeparatorComponent={() => <View style={{ height: hp(3) }} />}
         contentContainerStyle={{ paddingBottom: insets.top }}
-        renderItem={({ item, index }) => {
+        renderItem={({
+          item,
+          index,
+        }: {
+          item: AnimeInfoEpisode
+          index: number
+        }) => {
           return (
-            <Pressable
-              onPress={() => {
-                setSelectedEpisodeId(item.id)
-              }}
-              style={{
-                width: WIDTH,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <View
+            <>
+              <Pressable
+                onPress={() => {
+                  setSelectedEpisodeId(item.id)
+                  setSelectedIndex(index + 1)
+                }}
                 style={{
-                  backgroundColor:
-                    item.id === selectedEpisodeId
-                      ? COLORS.brass
-                      : COLORS.gunmetal,
-                  width: wp(90),
-                  height: hp(6),
-                  borderRadius: wp(5),
-                  flexDirection: "row",
+                  width: WIDTH,
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  paddingHorizontal: wp(8),
+                  justifyContent: "center",
                 }}
               >
-                <Text style={{ color: COLORS.white }}>{`Episode ${
-                  index + 1
-                }`}</Text>
-                <Foundation name="play" size={24} color={COLORS.white} />
-              </View>
-            </Pressable>
+                <View
+                  style={{
+                    backgroundColor:
+                      item.id === selectedEpisodeId
+                        ? COLORS.brass
+                        : COLORS.gunmetal,
+                    width: wp(90),
+                    height: hp(5),
+                    borderRadius: wp(5),
+                    borderColor: "gray",
+                    borderWidth: wp(0.2),
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingHorizontal: wp(8),
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: COLORS.white,
+                      fontWeight: "500",
+                    }}
+                  >
+                    {item.number}
+                  </Text>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      color: COLORS.white,
+                      width: wp(57),
+                      textAlign: "center",
+                      fontWeight: "500",
+                    }}
+                  >{`${
+                    item?.title ? item.title : `Episode ${item.number}`
+                  }`}</Text>
+                  <Foundation name="play" size={24} color={COLORS.white} />
+                </View>
+              </Pressable>
+            </>
           )
         }}
       />

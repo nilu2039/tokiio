@@ -2,7 +2,7 @@ import { View, Text, ActivityIndicator, SafeAreaView } from "react-native"
 import React, { FC } from "react"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { RootStackProps } from "../../../App"
-import { useInfiniteQuery } from "react-query"
+import { useInfiniteQuery } from "@tanstack/react-query"
 import { searchAnime } from "../../services/exploreRequests"
 import {
   widthPercentageToDP as wp,
@@ -19,6 +19,7 @@ import { startCase } from "lodash"
 import { LinearGradient } from "expo-linear-gradient"
 import GradientText from "../../components/ui/GradientText"
 import GradientBackground from "../../components/ui/GradientBackground"
+import { TopAiringResult } from "../../types/explore"
 
 type SearchRouteProps = NativeStackScreenProps<RootStackProps, "Search">
 
@@ -33,14 +34,14 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
     fetchNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: "search-anime",
+    queryKey: ["search-anime-screen"],
     cacheTime: 0,
     queryFn: ({ pageParam = 1 }) =>
       searchAnime({ searchQuery, page: pageParam }),
     getNextPageParam: (lastPage) => {
       if (lastPage?.currentPage) {
         if (lastPage.hasNextPage) {
-          return parseFloat(lastPage?.currentPage) + 1
+          return lastPage?.currentPage + 1
         }
       } else return 1
     },
@@ -99,18 +100,16 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
               <AnimeCard
                 id={item?.id}
                 containerStyle={{ marginLeft: wp(4.6) }}
-                title={item?.title as string}
+                title={
+                  item?.title?.english
+                    ? item?.title?.english
+                    : item?.title?.romaji
+                }
                 imageUri={item?.image as string}
                 titleStyle={{ textAlign: "center" }}
                 onPress={() => {
                   navigation.navigate("Player", {
-                    id: item?.id as string,
-                    title: item?.title
-                      ? item?.title
-                      : (startCase(item?.id) as string),
-                    image: item?.image as string,
-                    url: item?.url as string,
-                    genres: [],
+                    ...(item as TopAiringResult),
                   })
                 }}
               />

@@ -7,7 +7,7 @@ import {
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
 import GradientBackground from "../../components/ui/GradientBackground"
-import RecentEpisodes from "./RecentEpisodes"
+import PopularAnime from "./PopularAnime"
 import SearchModal from "./SearchModal"
 import TopCardSection from "./TopCardSection"
 
@@ -35,7 +35,7 @@ const HomeScreen = () => {
         </View>
         <ScrollView style={{ marginBottom: hp(5) }}>
           <TopCardSection />
-          <RecentEpisodes />
+          <PopularAnime />
         </ScrollView>
       </SafeAreaView>
     </GradientBackground>

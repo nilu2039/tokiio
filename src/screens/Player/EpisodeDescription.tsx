@@ -25,7 +25,7 @@ const KeyMapper = ({
   key2,
 }: {
   key1: string
-  key2: string | number | string[]
+  key2: string | number | string[] | null | undefined
 }) => {
   return (
     <View
@@ -73,10 +73,12 @@ const EpisodeDescription: FC<EpisodeDescriptionProps> = ({ data }) => {
           justifyContent: "space-between",
         }}
       >
-        <Image
-          style={{ borderRadius: wp(2) }}
-          source={{ uri: data?.image, height: hp(15), width: wp(20) }}
-        />
+        {data?.image ? (
+          <Image
+            style={{ borderRadius: wp(2) }}
+            source={{ uri: data?.image, height: hp(15), width: wp(20) }}
+          />
+        ) : null}
         <View style={{ width: wp(70) }}>
           <Text
             style={{
@@ -85,7 +87,7 @@ const EpisodeDescription: FC<EpisodeDescriptionProps> = ({ data }) => {
               fontWeight: "600",
             }}
           >
-            {data?.title}
+            {data?.title?.english ? data?.title?.english : data?.title?.romaji}
           </Text>
           <Text
             style={{
@@ -96,7 +98,7 @@ const EpisodeDescription: FC<EpisodeDescriptionProps> = ({ data }) => {
               marginBottom: hp(2),
             }}
           >
-            {data?.otherName}
+            {data?.title?.romaji}
           </Text>
           <View>
             <Text
@@ -109,7 +111,7 @@ const EpisodeDescription: FC<EpisodeDescriptionProps> = ({ data }) => {
       </View>
       <View style={{ left: wp(23), marginTop: hp(1), gap: hp(1) }}>
         <KeyMapper key1="Type" key2={data?.type as string} />
-        <KeyMapper key1="Premiered" key2={data?.releaseDate as string} />
+        <KeyMapper key1="Premiered" key2={data?.releaseDate} />
         <KeyMapper key1="Status" key2={data?.status as string} />
         <KeyMapper key1="Genre" key2={data?.genres as string[]} />
         {/* {

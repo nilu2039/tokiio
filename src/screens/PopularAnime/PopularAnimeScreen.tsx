@@ -2,34 +2,34 @@ import { FontAwesome } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { FlashList } from "@shopify/flash-list"
-import { startCase } from "lodash"
+import { useInfiniteQuery } from "@tanstack/react-query"
 import React, { FC } from "react"
 import { ActivityIndicator, SafeAreaView, View } from "react-native"
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
-import { useInfiniteQuery } from "react-query"
 import { RootStackProps } from "../../../App"
 import AnimeCard from "../../components/ui/AnimeCards"
 import GradientBackground from "../../components/ui/GradientBackground"
 import { COLORS } from "../../config/colors"
-import { getRecentEpisodes } from "../../services/exploreRequests"
+import { getPopularAnime } from "../../services/exploreRequests"
+import { TopAiringResult } from "../../types/explore"
 
-interface RecentEpisodesScreen {}
+interface PopularAnimeProps {}
 
-const RecentEpisodesScreen: FC<RecentEpisodesScreen> = ({}) => {
+const PopularAnimeScreen: FC<PopularAnimeProps> = ({}) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackProps, "Player">>()
 
   const { data, isLoading, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: "recent-episodes-modal",
-      queryFn: ({ pageParam = 1 }) => getRecentEpisodes({ page: pageParam }),
+      queryKey: ["popular-anime-screen"],
+      queryFn: ({ pageParam = 1 }) => getPopularAnime({ page: pageParam }),
       getNextPageParam: (lastPage) => {
         if (lastPage?.currentPage) {
           if (lastPage.hasNextPage) {
-            return parseInt(lastPage?.currentPage) + 1
+            return lastPage?.currentPage + 1
           }
         } else return 1
       },
@@ -73,18 +73,16 @@ const RecentEpisodesScreen: FC<RecentEpisodesScreen> = ({}) => {
               <AnimeCard
                 id={item?.id}
                 containerStyle={{ marginLeft: wp(4.6) }}
-                title={item?.title as string}
+                title={
+                  item?.title?.english
+                    ? item?.title?.english
+                    : item?.title?.romaji
+                }
                 imageUri={item?.image as string}
                 titleStyle={{ textAlign: "center" }}
                 onPress={() => {
                   navigation.navigate("Player", {
-                    id: item?.id as string,
-                    title: item?.title
-                      ? item?.title
-                      : (startCase(item?.id) as string),
-                    image: item?.image as string,
-                    url: item?.url as string,
-                    genres: [],
+                    ...(item as TopAiringResult),
                   })
                 }}
               />
@@ -96,4 +94,4 @@ const RecentEpisodesScreen: FC<RecentEpisodesScreen> = ({}) => {
   )
 }
 
-export default RecentEpisodesScreen
+export default PopularAnimeScreen

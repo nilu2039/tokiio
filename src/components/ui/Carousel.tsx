@@ -110,7 +110,7 @@ const Carousel: React.FC<CarouselProps> = ({
             height: ITEM_HEIGHT,
             borderRadius: wp(2),
           }}
-          source={{ uri: item?.image }}
+          source={{ uri: item?.image! }}
         >
           <LinearGradient
             style={{
@@ -145,7 +145,7 @@ const Carousel: React.FC<CarouselProps> = ({
                   fontWeight: "600",
                 }}
               >
-                {item?.title ? item?.title : startCase(item?.id)}
+                {item?.title?.english}
               </Text>
               <UIButton
                 containerStyle={{
@@ -158,11 +158,7 @@ const Carousel: React.FC<CarouselProps> = ({
                 }}
                 onPress={() =>
                   navigation.navigate("Player", {
-                    id: item?.id,
-                    title: item?.title ? item?.title : startCase(item?.id),
-                    image: item?.image,
-                    url: item?.url,
-                    genres: item?.genres,
+                    ...item,
                   })
                 }
                 label="Play Now"

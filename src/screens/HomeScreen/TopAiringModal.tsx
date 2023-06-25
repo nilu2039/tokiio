@@ -9,7 +9,7 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
-import { useInfiniteQuery } from "react-query"
+import { useInfiniteQuery } from "@tanstack/react-query"
 import { RootStackProps } from "../../../App"
 import AnimeCard from "../../components/ui/AnimeCards"
 import GradientBackground from "../../components/ui/GradientBackground"
@@ -26,12 +26,12 @@ const TopAiringModal: React.FC<TopAiringModalProps> = ({ setModalVisible }) => {
 
   const { data, isLoading, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: "top-airing-modal",
+      queryKey: ["top-airing-modal"],
       queryFn: ({ pageParam = 1 }) => getTopAiring({ page: pageParam }),
       getNextPageParam: (lastPage) => {
         if (lastPage?.currentPage) {
           if (lastPage.hasNextPage) {
-            return parseInt(lastPage?.currentPage) + 1
+            return lastPage?.currentPage + 1
           }
         } else return 1
       },
@@ -75,20 +75,18 @@ const TopAiringModal: React.FC<TopAiringModalProps> = ({ setModalVisible }) => {
               <AnimeCard
                 id={item?.id}
                 containerStyle={{ marginLeft: wp(4.6) }}
-                title={item?.title as string}
+                title={
+                  item?.title?.english
+                    ? item?.title.english
+                    : (item?.title?.userPreferred as string)
+                }
                 imageUri={item?.image as string}
                 titleStyle={{ textAlign: "center" }}
-                onPress={() => {
-                  navigation.navigate("Player", {
-                    id: item?.id as string,
-                    title: item?.title
-                      ? item?.title
-                      : (startCase(item?.id) as string),
-                    image: item?.image as string,
-                    url: item?.url as string,
-                    genres: [],
-                  })
-                }}
+                // onPress={() => {
+                //   navigation.navigate("Player", {
+                //     ...item,
+                //   })
+                // }}
               />
             )}
           />
