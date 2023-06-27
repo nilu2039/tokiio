@@ -3,6 +3,7 @@
     "name": "animania",
     "slug": "animania",
     "version": "1.0.0",
+    "scheme":"com.nilanjan.tokiio",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",

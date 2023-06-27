@@ -1,5 +1,5 @@
 import React, { FC, useRef, useState } from "react"
-import { ActivityIndicator, FlatList, Text, View } from "react-native"
+import { ActivityIndicator, Text, View } from "react-native"
 import { HEIGHT, WIDTH } from "../../utils/dimensions"
 
 import { FlashList } from "@shopify/flash-list"
@@ -15,6 +15,8 @@ import { getStreamingLinks } from "../../services/exploreRequests"
 import { AnimeInfo, AnimeInfoEpisode } from "../../types/explore"
 import EpisodeCard from "./EpisodeCard"
 import EpisodeHeader from "./EpisodeHeader"
+
+import { useAuth } from "@clerk/clerk-expo"
 
 interface EpisodeListProps {
   data: AnimeInfo | null | undefined
@@ -46,29 +48,17 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
   const [selectedEpisodeId, setSelectedEpisodeId] = useState(
     data?.episodes ? data?.episodes[0]?.id : ""
   )
-  const [firstView, setFirstView] = useState(true)
-  const [selectedIndex, setSelectedIndex] = useState(1)
+
   const [currentEpisodeSlab, setCurrentEpisodeSlab] = useState(0)
 
-  const listRef = useRef<FlatList>(null)
-  // const scrollToIndex = (index: number) => {
-  //   if (listRef.current) {
-  //     listRef.current.scrollToIndex({ index })
-  //   }
-  // }
+  const listRef = useRef<FlashList<AnimeInfoEpisode>>(null)
 
   const { data: streamingLinkData, isLoading: isStreamingLinkLoading } =
     useQuery({
       queryKey: ["streaming-links", selectedEpisodeId],
+      cacheTime: 0,
       queryFn: () => getStreamingLinks({ episodeId: selectedEpisodeId }),
     })
-
-  // if (firstView && listRef.current) {
-  //   if (episodeId) {
-  //     scrollToIndex(data?.totalEpisodes! - 1 || 0)
-  //     setFirstView(false)
-  //   }
-  // }
 
   const extractBestStreamingUrl = (
     sources:
@@ -88,6 +78,8 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
     const p_360 = sources?.find((item) => item.quality === "360p")
     if (p_360) return p_360.url
   }
+
+  const { getToken } = useAuth()
 
   return (
     <View
@@ -110,12 +102,25 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
         <VideoPlayer
           style={{ height: hp(35), marginTop: hp(2) }}
           uri={extractBestStreamingUrl(streamingLinkData?.sources) as string}
+          socketFn={async ({ status, socket }) => {
+            const token = await getToken()
+
+            if (status.isPlaying && !status.isBuffering) {
+              socket?.emit("video-time-stamp", {
+                animeId: data.id,
+                episodeId: selectedEpisodeId,
+                timeStamp: status.positionMillis,
+                sessionToken: token,
+              })
+            }
+          }}
         />
       )}
 
       <FlashList
-        // ref={listRef}
-        estimatedItemSize={200}
+        ref={listRef}
+        // initialScrollIndex={1}
+        estimatedItemSize={PER_PAGE_LIMIT}
         data={data?.episodes.slice(
           currentEpisodeSlab,
           PER_PAGE_LIMIT + currentEpisodeSlab

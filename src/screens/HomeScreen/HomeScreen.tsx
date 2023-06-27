@@ -1,15 +1,33 @@
 import React from "react"
-import { Image, SafeAreaView, ScrollView, StyleSheet } from "react-native"
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  Touchable,
+} from "react-native"
 
 import { View } from "react-native"
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
+import * as WebBrowser from "expo-web-browser"
+
 import GradientBackground from "../../components/ui/GradientBackground"
 import PopularAnime from "./PopularAnime"
 import SearchModal from "./SearchModal"
 import TopCardSection from "./TopCardSection"
+import { COLORS } from "../../config/colors"
+import { useWarmUpBrowser } from "../../hooks/useWarmUpBrowser"
+import { useAuth, useOAuth } from "@clerk/clerk-expo"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import SignIn from "../../components/SignIn/SignIn"
+
+WebBrowser.maybeCompleteAuthSession()
 
 const HomeScreen = () => {
   return (
@@ -21,7 +39,7 @@ const HomeScreen = () => {
             width: wp(100),
             justifyContent: "space-between",
             alignItems: "center",
-            paddingHorizontal: wp(10),
+            paddingHorizontal: wp(5),
           }}
         >
           <Image
@@ -31,7 +49,10 @@ const HomeScreen = () => {
             }}
             source={require("../../../assets/icons/logo.png")}
           />
-          <SearchModal />
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <SearchModal />
+            <SignIn />
+          </View>
         </View>
         <ScrollView style={{ marginBottom: hp(5) }}>
           <TopCardSection />

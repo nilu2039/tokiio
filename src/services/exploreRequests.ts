@@ -13,9 +13,17 @@ import { ZodError } from "zod"
 import { BASE_URL } from "../utils/constants"
 import { StreamingLinks, StreamingLinksSchema } from "../types/streaming"
 
-export const getTopAiring = async ({ page = 1 }): Promise<TopAiring | null> => {
+export const getTopAiring = async ({
+  page = 1,
+  getToken,
+}: {
+  page: number
+  getToken: any
+}): Promise<TopAiring | null> => {
   try {
-    const { data } = await axios.get(`${BASE_URL}/top-airing?page=${page}`)
+    const { data } = await axios.get(`${BASE_URL}/top-airing?page=${page}`, {
+      headers: { Authorization: `Bearer ${getToken && (await getToken())}` },
+    })
     // console.log(data.results[0])
     TopAiringSchema.parse(data)
     return data

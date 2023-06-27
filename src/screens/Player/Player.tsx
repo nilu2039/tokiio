@@ -21,12 +21,6 @@ import { AnimeInfo } from "../../types/explore"
 
 type PlayerRouteProps = NativeStackScreenProps<RootStackProps, "Player">
 
-// const PlayerRouteSchema = z.object({
-//   id: z.string(),
-//   title: z.string(),
-//   episodeId: z.string().optional(),
-// })
-
 const Player: React.FC<PlayerRouteProps> = ({ route }) => {
   const navigation = useNavigation()
 
