@@ -138,7 +138,8 @@ const SearchAnimeTextInput = () => {
                         onPress={() => {
                           setModalVisible(false)
                           navigation.navigate("Player", {
-                            ...item,
+                            id: item.id,
+                            title: item?.title,
                           })
                         }}
                       />

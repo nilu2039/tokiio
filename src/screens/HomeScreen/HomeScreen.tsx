@@ -1,35 +1,33 @@
-import React from "react"
-import {
-  ActivityIndicator,
-  Image,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  Touchable,
-} from "react-native"
+import React, { useEffect } from "react"
+import { Image, SafeAreaView, ScrollView, StyleSheet } from "react-native"
 
+import * as WebBrowser from "expo-web-browser"
 import { View } from "react-native"
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
-import * as WebBrowser from "expo-web-browser"
 
+import SignIn from "../../components/SignIn/SignIn"
 import GradientBackground from "../../components/ui/GradientBackground"
 import PopularAnime from "./PopularAnime"
 import SearchModal from "./SearchModal"
 import TopCardSection from "./TopCardSection"
-import { COLORS } from "../../config/colors"
-import { useWarmUpBrowser } from "../../hooks/useWarmUpBrowser"
-import { useAuth, useOAuth } from "@clerk/clerk-expo"
-import { TouchableOpacity } from "react-native-gesture-handler"
-import SignIn from "../../components/SignIn/SignIn"
+import { useAuth } from "@clerk/clerk-expo"
 
 WebBrowser.maybeCompleteAuthSession()
 
 const HomeScreen = () => {
+  // const { getToken } = useAuth()
+
+  // useEffect(() => {
+  //   const _getToken = async () => {
+  //     const token = await getToken()
+  //     console.log(token)
+  //   }
+  //   _getToken()
+  // }, [])
+
   return (
     <GradientBackground>
       <SafeAreaView>

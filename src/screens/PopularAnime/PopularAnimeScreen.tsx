@@ -82,7 +82,8 @@ const PopularAnimeScreen: FC<PopularAnimeProps> = ({}) => {
                 titleStyle={{ textAlign: "center" }}
                 onPress={() => {
                   navigation.navigate("Player", {
-                    ...(item as TopAiringResult),
+                    id: item?.id as string,
+                    title: item?.title,
                   })
                 }}
               />

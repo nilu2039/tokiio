@@ -14,7 +14,21 @@ import { ClerkProvider } from "@clerk/clerk-expo"
 
 export type RootStackProps = {
   HomeScreen: undefined
-  Player: TopAiringResult | undefined
+  // Player: TopAiringResult | undefined
+  Player:
+    | {
+        id: string
+        title:
+          | {
+              romaji: string | null
+              english: string | null
+              native: string | null
+              userPreferred: string | null
+            }
+          | null
+          | undefined
+      }
+    | undefined
   Search: {
     searchQuery: string
   }

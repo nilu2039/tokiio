@@ -1,24 +1,21 @@
 import axios, { CancelTokenSource } from "axios"
+import { ZodError } from "zod"
 import {
-  type TopAiring,
-  TopAiringSchema,
-  RecentEpisodes,
-  RecentEpisodesSchema,
   AnimeInfo,
   AnimeInfoSchema,
-  AnimeSearch,
-  AnimeSearchSchema,
+  RecentEpisodes,
+  RecentEpisodesSchema,
+  TopAiringSchema,
+  type TopAiring,
 } from "../types/explore"
-import { ZodError } from "zod"
 import { BASE_URL } from "../utils/constants"
-import { StreamingLinks, StreamingLinksSchema } from "../types/streaming"
 
 export const getTopAiring = async ({
   page = 1,
   getToken,
 }: {
   page: number
-  getToken: any
+  getToken?: any
 }): Promise<TopAiring | null> => {
   try {
     const { data } = await axios.get(`${BASE_URL}/top-airing?page=${page}`, {
@@ -76,26 +73,6 @@ export const getAnimeInfo = async ({ id = "" }): Promise<AnimeInfo | null> => {
   } catch (error) {
     if (error instanceof ZodError) {
       console.log("get info type parsing error", error)
-      return null
-    }
-    throw error
-  }
-}
-
-export const getStreamingLinks = async ({
-  episodeId,
-}: {
-  episodeId: string | null
-}): Promise<StreamingLinks | null> => {
-  try {
-    const { data } = await axios.get(
-      `${BASE_URL}/streaming-links?episodeId=${episodeId}`
-    )
-    StreamingLinksSchema.parse(data)
-    return data
-  } catch (error) {
-    if (error instanceof ZodError) {
-      console.log("streaming links type parsing error", error)
       return null
     }
     throw error

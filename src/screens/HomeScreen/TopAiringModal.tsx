@@ -82,11 +82,12 @@ const TopAiringModal: React.FC<TopAiringModalProps> = ({ setModalVisible }) => {
                 }
                 imageUri={item?.image as string}
                 titleStyle={{ textAlign: "center" }}
-                // onPress={() => {
-                //   navigation.navigate("Player", {
-                //     ...item,
-                //   })
-                // }}
+                onPress={() => {
+                  navigation.navigate("Player", {
+                    id: item?.id as string,
+                    title: item?.title,
+                  })
+                }}
               />
             )}
           />

@@ -11,7 +11,10 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import VideoPlayer from "../../components/ui/VideoPlayer"
 import { COLORS } from "../../config/colors"
-import { getStreamingLinks } from "../../services/exploreRequests"
+import {
+  getCurrentVideoTimeStamp,
+  getStreamingLinks,
+} from "../../services/streamingRequests"
 import { AnimeInfo, AnimeInfoEpisode } from "../../types/explore"
 import EpisodeCard from "./EpisodeCard"
 import EpisodeHeader from "./EpisodeHeader"
@@ -52,12 +55,26 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
   const [currentEpisodeSlab, setCurrentEpisodeSlab] = useState(0)
 
   const listRef = useRef<FlashList<AnimeInfoEpisode>>(null)
+  const { getToken, userId } = useAuth()
 
   const { data: streamingLinkData, isLoading: isStreamingLinkLoading } =
     useQuery({
       queryKey: ["streaming-links", selectedEpisodeId],
       cacheTime: 0,
       queryFn: () => getStreamingLinks({ episodeId: selectedEpisodeId }),
+    })
+
+  const { data: currentTimeStampData, isLoading: currentTimeStampLoading } =
+    useQuery({
+      queryKey: ["current-timestamp", selectedEpisodeId],
+      cacheTime: 0,
+      queryFn: () =>
+        getCurrentVideoTimeStamp({
+          episodeId: selectedEpisodeId,
+          animeId: data.id,
+          userId: userId ? userId : "",
+          getToken,
+        }),
     })
 
   const extractBestStreamingUrl = (
@@ -79,15 +96,13 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
     if (p_360) return p_360.url
   }
 
-  const { getToken } = useAuth()
-
   return (
     <View
       style={{
         height: HEIGHT - insets.top - hp(5),
       }}
     >
-      {isStreamingLinkLoading ? (
+      {isStreamingLinkLoading || currentTimeStampLoading ? (
         <View
           style={{
             justifyContent: "center",
@@ -100,6 +115,7 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
         </View>
       ) : (
         <VideoPlayer
+          timeStamp={currentTimeStampData?.timeStamp}
           style={{ height: hp(35), marginTop: hp(2) }}
           uri={extractBestStreamingUrl(streamingLinkData?.sources) as string}
           socketFn={async ({ status, socket }) => {
@@ -119,7 +135,7 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
 
       <FlashList
         ref={listRef}
-        // initialScrollIndex={1}
+        // initialScrollIndex={20}
         estimatedItemSize={PER_PAGE_LIMIT}
         data={data?.episodes.slice(
           currentEpisodeSlab,

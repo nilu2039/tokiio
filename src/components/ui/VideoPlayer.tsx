@@ -10,6 +10,7 @@ import { SOCKET_URL } from "../../utils/constants"
 interface VideoPlayerProps {
   uri: string
   style: StyleProp<ViewStyle>
+  timeStamp?: number
   socketFn?: ({
     status,
     socket,
@@ -19,13 +20,24 @@ interface VideoPlayerProps {
   }) => void
 }
 
-const VideoPlayer: FC<VideoPlayerProps> = ({ uri, style, socketFn }) => {
-  const videoRef = useRef(null)
+const VideoPlayer: FC<VideoPlayerProps> = ({
+  uri,
+  style,
+  socketFn,
+  timeStamp,
+}) => {
+  const videoRef = useRef<Video>(null)
   const [status, setStatus] = useState<AVPlaybackStatusSuccess>()
   const [isInitialLoading, setIsInitialLoading] = useState(true)
 
   const [socket, setSocket] =
     useState<Socket<DefaultEventsMap, DefaultEventsMap>>()
+
+  useEffect(() => {
+    if (videoRef.current) {
+      timeStamp && videoRef.current.setPositionAsync(timeStamp)
+    }
+  }, [videoRef])
 
   useEffect(() => {
     const _socket = io(SOCKET_URL)

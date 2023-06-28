@@ -140,7 +140,8 @@ const PopularAnimeCard: React.FC<RecentEpisodeCardProps> = ({
               }}
               onPress={() => {
                 navigation.navigate("Player", {
-                  ...item,
+                  id: item.id,
+                  title: item?.title,
                 })
               }}
             />

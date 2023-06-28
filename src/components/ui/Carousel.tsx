@@ -158,7 +158,8 @@ const Carousel: React.FC<CarouselProps> = ({
                 }}
                 onPress={() =>
                   navigation.navigate("Player", {
-                    ...item,
+                    id: item.id,
+                    title: item?.title,
                   })
                 }
                 label="Play Now"
