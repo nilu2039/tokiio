@@ -32,6 +32,7 @@ const AnimeCard: FC<AnimeCardsProps> = ({
   status,
 }) => {
   const [imageBackgroundLoading, setImageBackgroundLoading] = useState(true)
+
   return (
     <Pressable
       onPress={onPress}

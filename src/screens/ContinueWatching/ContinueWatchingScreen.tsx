@@ -1,40 +1,38 @@
-import { FontAwesome } from "@expo/vector-icons"
-import { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { useInfiniteQuery } from "@tanstack/react-query"
+import { View, Text, SafeAreaView, ActivityIndicator } from "react-native"
 import React, { FC } from "react"
-import { ActivityIndicator, SafeAreaView, View } from "react-native"
+import GradientBackground from "../../components/ui/GradientBackground"
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
-import { RootStackProps } from "../../../App"
-import { searchAnime } from "../../services/exploreRequests"
-
-import { FlashList } from "@shopify/flash-list"
-import { useSafeAreaInsets } from "react-native-safe-area-context"
-import AnimeCard from "../../components/ui/AnimeCards"
-import GradientBackground from "../../components/ui/GradientBackground"
+import { FontAwesome } from "@expo/vector-icons"
 import GradientText from "../../components/ui/GradientText"
+import { FlashList } from "@shopify/flash-list"
+import AnimeCard from "../../components/ui/AnimeCards"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { RootStackProps } from "../../../App"
+import { useInfiniteQuery } from "@tanstack/react-query"
+import { getHistory } from "../../services/historyRequests"
+import { useAuth } from "@clerk/clerk-expo"
 import { COLORS } from "../../config/colors"
-import { WIDTH } from "../../utils/dimensions"
 
-type SearchRouteProps = NativeStackScreenProps<RootStackProps, "Search">
+type ContinueWatchingProps = NativeStackScreenProps<
+  RootStackProps,
+  "ContinueWatching"
+>
 
-const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
-  const insets = useSafeAreaInsets()
-  const { searchQuery } = route.params!
-  const HEADER_TEXT = `Results found for ${searchQuery}`
+const ContinueWatchingScreen: FC<ContinueWatchingProps> = ({ navigation }) => {
+  const { getToken } = useAuth()
 
   const {
-    data: searchData,
-    isLoading: searchDataLoading,
+    data: historyData,
+    isLoading: historyLoadingData,
     fetchNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["search-anime-screen"],
-    cacheTime: 0,
-    queryFn: ({ pageParam = 1 }) =>
-      searchAnime({ searchQuery, page: pageParam }),
+    queryKey: ["anime-history-with-pagination"],
+    // cacheTime: 0,
+    queryFn: ({ pageParam = 1 }) => getHistory({ getToken, page: pageParam }),
     getNextPageParam: (lastPage) => {
       if (lastPage?.currentPage) {
         if (lastPage.hasNextPage) {
@@ -44,10 +42,10 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
     },
   })
 
-  if (searchDataLoading) {
+  if (historyLoadingData) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-        <ActivityIndicator size={wp(8)} />
+        <ActivityIndicator />
       </View>
     )
   }
@@ -73,16 +71,13 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
           />
           <GradientText
             numberOfLines={1}
-            style={{ fontSize: wp(4), width: WIDTH, textAlign: "center" }}
-            label={
-              `${HEADER_TEXT}`.substring(0, 30) +
-              `${HEADER_TEXT.length > 30 ? "..." : ""}`
-            }
+            style={{ fontSize: wp(4), width: wp(100), textAlign: "center" }}
+            label={`Continue Watching`}
           />
         </View>
         <View style={{ flex: 1 }}>
           <FlashList
-            data={searchData?.pages.flatMap((item) => item?.results)}
+            data={historyData?.pages.flatMap((item) => item?.result)}
             estimatedItemSize={200}
             numColumns={2}
             onEndReachedThreshold={0.1}
@@ -95,20 +90,20 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
             ItemSeparatorComponent={() => <View style={{ height: hp(10) }} />}
             renderItem={({ item }) => (
               <AnimeCard
-                id={item?.id}
-                status={item?.status}
+                id={item?.animeId}
                 containerStyle={{ marginLeft: wp(4.6) }}
-                title={
-                  item?.title?.english
-                    ? item?.title?.english
-                    : item?.title?.romaji
-                }
-                imageUri={item?.image as string}
+                title={item?.animeTitle}
+                imageUri={item?.animeImg as string}
                 titleStyle={{ textAlign: "center" }}
                 onPress={() => {
                   navigation.navigate("Player", {
-                    id: item?.id as string,
-                    title: item?.title,
+                    id: item?.animeId as string,
+                    title: {
+                      english: item?.animeTitle as string,
+                      romaji: "",
+                      native: "",
+                      userPreferred: "",
+                    },
                   })
                 }}
               />
@@ -120,4 +115,4 @@ const Search: FC<SearchRouteProps> = ({ route, navigation }) => {
   )
 }
 
-export default Search
+export default ContinueWatchingScreen

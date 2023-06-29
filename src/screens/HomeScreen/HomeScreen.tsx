@@ -14,6 +14,7 @@ import PopularAnime from "./PopularAnime"
 import SearchModal from "./SearchModal"
 import TopCardSection from "./TopCardSection"
 import { useAuth } from "@clerk/clerk-expo"
+import ContinueWatching from "./ContinueWatching"
 
 WebBrowser.maybeCompleteAuthSession()
 
@@ -55,6 +56,7 @@ const HomeScreen = () => {
         <ScrollView style={{ marginBottom: hp(5) }}>
           <TopCardSection />
           <PopularAnime />
+          <ContinueWatching />
         </ScrollView>
       </SafeAreaView>
     </GradientBackground>

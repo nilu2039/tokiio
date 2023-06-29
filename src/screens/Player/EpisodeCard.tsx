@@ -13,13 +13,17 @@ interface EpisodeCardProps {
   selectedEpisodeId: string
   setSelectedEpisodeId: React.Dispatch<React.SetStateAction<string>>
   item: AnimeInfoEpisode
+  timeStamp?: number | null
 }
 
 const EpisodeCard: FC<EpisodeCardProps> = ({
   item,
   selectedEpisodeId,
   setSelectedEpisodeId,
+  timeStamp,
 }) => {
+  console.log(item.id, timeStamp)
+
   return (
     <Pressable
       onPress={() => {
@@ -34,7 +38,11 @@ const EpisodeCard: FC<EpisodeCardProps> = ({
       <View
         style={{
           backgroundColor:
-            item.id === selectedEpisodeId ? "#411847" : "transparent",
+            item.id === selectedEpisodeId
+              ? "#411847"
+              : timeStamp
+              ? "#411847"
+              : "transparent",
           width: wp(95),
           height: hp(15),
           borderRadius: wp(2),

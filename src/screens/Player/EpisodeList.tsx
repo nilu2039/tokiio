@@ -126,6 +126,10 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
                 animeId: data.id,
                 episodeId: selectedEpisodeId,
                 timeStamp: status.positionMillis,
+                animeImg: data.image,
+                animeTitle: data?.title?.english
+                  ? data?.title?.english
+                  : data?.title?.romaji,
                 sessionToken: token,
               })
             }
@@ -163,6 +167,11 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
           return (
             <>
               <EpisodeCard
+                timeStamp={
+                  item.id === currentTimeStampData?.episodeId
+                    ? currentTimeStampData.timeStamp
+                    : null
+                }
                 item={item}
                 selectedEpisodeId={selectedEpisodeId}
                 setSelectedEpisodeId={setSelectedEpisodeId}

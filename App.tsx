@@ -11,6 +11,7 @@ import Search from "./src/screens/Search/Search"
 import type { TopAiringResult } from "./src/types/explore"
 
 import { ClerkProvider } from "@clerk/clerk-expo"
+import ContinueWatchingScreen from "./src/screens/ContinueWatching/ContinueWatchingScreen"
 
 export type RootStackProps = {
   HomeScreen: undefined
@@ -33,6 +34,7 @@ export type RootStackProps = {
     searchQuery: string
   }
   PopularAnime: undefined
+  ContinueWatching: undefined
 }
 
 const Stack = createNativeStackNavigator<RootStackProps>()
@@ -98,6 +100,11 @@ export default function App() {
               options={{ headerShown: false }}
               name="PopularAnime"
               component={PopularAnimeScreen}
+            />
+            <Stack.Screen
+              options={{ headerShown: false }}
+              name="ContinueWatching"
+              component={ContinueWatchingScreen}
             />
           </Stack.Navigator>
         </NavigationContainer>

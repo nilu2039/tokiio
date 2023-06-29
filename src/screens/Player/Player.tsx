@@ -1,6 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons"
 import type { NativeStackScreenProps } from "@react-navigation/native-stack"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import React from "react"
 import { ActivityIndicator, Text, View } from "react-native"
 import { SafeAreaView } from "react-native-safe-area-context"
@@ -23,6 +23,7 @@ type PlayerRouteProps = NativeStackScreenProps<RootStackProps, "Player">
 
 const Player: React.FC<PlayerRouteProps> = ({ route }) => {
   const navigation = useNavigation()
+  const queryClient = useQueryClient()
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["anime-info-23"],
@@ -81,7 +82,11 @@ const Player: React.FC<PlayerRouteProps> = ({ route }) => {
           }}
         >
           <FontAwesome
-            onPress={() => {
+            onPress={async () => {
+              queryClient.invalidateQueries({
+                queryKey: ["anime-history"],
+              })
+
               navigation.goBack()
             }}
             name="angle-left"

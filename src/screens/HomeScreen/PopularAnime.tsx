@@ -43,6 +43,7 @@ const PopularAnimeCard: React.FC<RecentEpisodeCardProps> = ({
 }) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackProps, "Player">>()
+
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false}>
       <FlatList
@@ -50,7 +51,7 @@ const PopularAnimeCard: React.FC<RecentEpisodeCardProps> = ({
         scrollEnabled={false}
         numColumns={Math.ceil(data.length / 2)}
         showsVerticalScrollIndicator={false}
-        ListFooterComponent={<View style={{ height: 20 }} />}
+        ListFooterComponent={<View style={{ height: hp(2.4) }} />}
         contentContainerStyle={{
           justifyContent: "center",
           alignItems: "center",
@@ -59,73 +60,6 @@ const PopularAnimeCard: React.FC<RecentEpisodeCardProps> = ({
         }}
         renderItem={({ item, index }) => {
           return (
-            // <Pressable
-            //   onPress={() => {
-            //     navigation.navigate("Player", {
-            //       id: item.id,
-            //       title: item.title ? item.title : startCase(item.id),
-            //       image: item.image,
-            //       url: item.url,
-            //       genres: [],
-            //       episodeId: item.episodeId,
-            //     })
-            //   }}
-            //   style={{
-            //     height: hp(25),
-            //     width: wp(40),
-            //     marginHorizontal: wp(3),
-            //     backgroundColor: "lightgray",
-            //     borderRadius: wp(2),
-            //     borderBottomLeftRadius: 0,
-            //   }}
-            // >
-            //   <View style={{ marginBottom: hp(1.5) }}>
-            //     <Image
-            //       source={{ uri: item.image }}
-            //       style={{
-            //         width: wp(40),
-            //         height: hp(25),
-            //         marginBottom: hp(1.5),
-            //         position: "relative",
-            //         borderRadius: wp(2),
-            //         borderBottomLeftRadius: 0,
-            //       }}
-            //     />
-            //     <View
-            //       style={{
-            //         position: "absolute",
-            //         bottom: -hp(0.5),
-            //         backgroundColor: COLORS.brass,
-            //         width: wp(15),
-            //         height: hp(2),
-            //         borderBottomLeftRadius: wp(1),
-            //         alignItems: "center",
-            //         justifyContent: "center",
-            //       }}
-            //     >
-            //       <Text
-            //         style={{
-            //           color: COLORS.white,
-            //           fontSize: wp(3),
-            //           fontWeight: "600",
-            //           textAlign: "center",
-            //         }}
-            //       >
-            //         {item.episodeNumber}
-            //       </Text>
-            //     </View>
-            //   </View>
-            //   <Text
-            //     numberOfLines={2}
-            //     style={{
-            //       color: COLORS.white,
-            //       fontSize: wp(4),
-            //       fontWeight: "600",
-            //     }}
-            //   >
-            //     {item.title}
-            //   </Text>
-            // </Pressable>
             <AnimeCard
               id={item.id}
               title={

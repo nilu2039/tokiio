@@ -25,13 +25,12 @@ export type StreamingLinks = z.infer<typeof StreamingLinksSchema>
 export const CurrentVideoTimeStampSchema = z
   .object({
     id: z.number(),
-    key: z.string(),
-    userId: z.string(),
-    animeId: z.string(),
+    queryKey: z.string(),
     episodeId: z.string(),
     timeStamp: z.number(),
     createdAt: z.string(),
     updatedAt: z.string(),
+    historyId: z.number().nullable(),
   })
   .nullable()
 
