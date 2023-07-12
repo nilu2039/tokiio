@@ -47,6 +47,8 @@ const TopCardSection = () => {
     return <ActivityIndicator />
   }
 
+  // console.log(data?.pages[0]?.results[0].title)
+
   return (
     <View
       style={{

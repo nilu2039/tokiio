@@ -29,3 +29,28 @@ export const AnimeHistorySchema = z.object({
   result: z.array(ResultSchema),
 })
 export type AnimeHistory = z.infer<typeof AnimeHistorySchema>
+
+//anime-history-by-id
+
+export const AnimeHistoryByIdSchema = z
+  .object({
+    id: z.number(),
+    userId: z.string(),
+    animeId: z.string(),
+    animeImg: z.string(),
+    animeTitle: z.string(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    episodes: z.array(EpisodeSchema),
+  })
+  .nullable()
+export type AnimeHistoryById = z.infer<typeof AnimeHistoryByIdSchema>
+
+export const SaveHistorySchemaClient = z.object({
+  animeId: z.string(),
+  animeImg: z.string().optional().nullable(),
+  animeTitle: z.string().optional().nullable(),
+  episodeId: z.string(),
+  timeStamp: z.string(),
+  getToken: z.any(),
+})

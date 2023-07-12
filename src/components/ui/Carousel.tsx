@@ -145,7 +145,9 @@ const Carousel: React.FC<CarouselProps> = ({
                   fontWeight: "600",
                 }}
               >
-                {item?.title?.english}
+                {item?.title?.english
+                  ? item?.title?.english
+                  : item?.title?.romaji}
               </Text>
               <UIButton
                 containerStyle={{

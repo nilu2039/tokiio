@@ -11,6 +11,7 @@ interface VideoPlayerProps {
   uri: string
   style: StyleProp<ViewStyle>
   timeStamp?: number
+  mutationFn?: ({ status }: { status: AVPlaybackStatusSuccess }) => void
   socketFn?: ({
     status,
     socket,
@@ -25,13 +26,15 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
   style,
   socketFn,
   timeStamp,
+  mutationFn,
 }) => {
   const videoRef = useRef<Video>(null)
   const [status, setStatus] = useState<AVPlaybackStatusSuccess>()
   const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [isPlaying, setIsPlaying] = useState(false)
 
-  const [socket, setSocket] =
-    useState<Socket<DefaultEventsMap, DefaultEventsMap>>()
+  // const [socket, setSocket] =
+  //   useState<Socket<DefaultEventsMap, DefaultEventsMap>>()
 
   useEffect(() => {
     if (videoRef.current) {
@@ -39,13 +42,21 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
     }
   }, [videoRef])
 
+  // useEffect(() => {
+  //   const _socket = io(SOCKET_URL)
+  //   setSocket(_socket)
+  //   return () => {
+  //     _socket.disconnect()
+  //   }
+  // }, [])
+
   useEffect(() => {
-    const _socket = io(SOCKET_URL)
-    setSocket(_socket)
+    mutationFn && status && mutationFn({ status: status })
+
     return () => {
-      _socket.disconnect()
+      mutationFn && mutationFn({ status: status as AVPlaybackStatusSuccess })
     }
-  }, [])
+  }, [isPlaying])
 
   useEffect(() => {
     triggerAudio()
@@ -58,7 +69,7 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
     <>
       <Video
         ref={videoRef}
-        progressUpdateIntervalMillis={10000}
+        // progressUpdateIntervalMillis={10000}
         style={style}
         source={{
           uri: uri,
@@ -66,9 +77,14 @@ const VideoPlayer: FC<VideoPlayerProps> = ({
         useNativeControls
         onLoad={() => setIsInitialLoading(false)}
         onPlaybackStatusUpdate={async (status) => {
-          socketFn &&
-            socketFn({ status: status as AVPlaybackStatusSuccess, socket })
+          // socketFn &&
+          //   socketFn({ status: status as AVPlaybackStatusSuccess, socket })
           setStatus(status as AVPlaybackStatusSuccess)
+          if ((status as AVPlaybackStatusSuccess).isPlaying) {
+            setIsPlaying(true)
+          } else {
+            setIsPlaying(false)
+          }
         }}
         isMuted={false}
         shouldPlay={true}

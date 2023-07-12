@@ -19,7 +19,7 @@ import ContinueWatching from "./ContinueWatching"
 WebBrowser.maybeCompleteAuthSession()
 
 const HomeScreen = () => {
-  // const { getToken } = useAuth()
+  const { userId } = useAuth()
 
   // useEffect(() => {
   //   const _getToken = async () => {
@@ -56,7 +56,7 @@ const HomeScreen = () => {
         <ScrollView style={{ marginBottom: hp(5) }}>
           <TopCardSection />
           <PopularAnime />
-          <ContinueWatching />
+          {userId ? <ContinueWatching /> : null}
         </ScrollView>
       </SafeAreaView>
     </GradientBackground>

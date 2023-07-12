@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Image } from "react-native"
-import React, { FC } from "react"
+import React, { FC, useState } from "react"
 import { Foundation } from "@expo/vector-icons"
 import { COLORS } from "../../config/colors"
 import { WIDTH } from "../../utils/dimensions"
@@ -13,21 +13,23 @@ interface EpisodeCardProps {
   selectedEpisodeId: string
   setSelectedEpisodeId: React.Dispatch<React.SetStateAction<string>>
   item: AnimeInfoEpisode
-  timeStamp?: number | null
+  isEpisodeWatched?: boolean | undefined
 }
 
 const EpisodeCard: FC<EpisodeCardProps> = ({
   item,
   selectedEpisodeId,
   setSelectedEpisodeId,
-  timeStamp,
+  isEpisodeWatched,
 }) => {
-  console.log(item.id, timeStamp)
+  const [isEpisodeWatchedLocal, setIsEpisodeWatchedLocal] =
+    useState(isEpisodeWatched)
 
   return (
     <Pressable
       onPress={() => {
         setSelectedEpisodeId(item.id)
+        setIsEpisodeWatchedLocal(true)
       }}
       style={{
         width: WIDTH,
@@ -40,10 +42,12 @@ const EpisodeCard: FC<EpisodeCardProps> = ({
           backgroundColor:
             item.id === selectedEpisodeId
               ? "#411847"
-              : timeStamp
+              : isEpisodeWatchedLocal
               ? "#411847"
               : "transparent",
           width: wp(95),
+          opacity:
+            selectedEpisodeId === item.id ? 1 : isEpisodeWatchedLocal ? 0.4 : 1,
           height: hp(15),
           borderRadius: wp(2),
           borderColor: COLORS.gunmetal,

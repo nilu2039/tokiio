@@ -14,16 +14,18 @@ import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from "react-native-responsive-screen"
+import { Entypo } from "@expo/vector-icons"
+
 import { RootStackProps } from "../../../App"
 import AnimeCard from "../../components/ui/AnimeCards"
 import GradientText from "../../components/ui/GradientText"
-import { getHistory } from "../../services/historyRequests"
 import { COLORS } from "../../config/colors"
+import { getHistory } from "../../services/historyRequests"
 
 const ContinueWatching = () => {
   const { getToken } = useAuth()
 
-  const { data: historyData, isError: isHistoryLoading } = useQuery({
+  const { data: historyData, isLoading: isHistoryLoading } = useQuery({
     queryKey: ["anime-history-without-pagination"],
     queryFn: () => getHistory({ page: 1, getToken }),
   })
@@ -53,11 +55,21 @@ const ContinueWatching = () => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingHorizontal: wp(10),
+          paddingHorizontal: wp(8),
           marginBottom: 17,
         }}
       >
-        <GradientText label="Continue Watching" />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: wp(2),
+          }}
+        >
+          <Entypo name="back-in-time" size={wp(6)} color="#fff" />
+          <GradientText label="Continue Watching" />
+        </View>
         <TouchableOpacity
           style={{
             borderColor: "gray",

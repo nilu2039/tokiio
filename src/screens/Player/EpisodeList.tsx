@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, View } from "react-native"
 import { HEIGHT, WIDTH } from "../../utils/dimensions"
 
 import { FlashList } from "@shopify/flash-list"
-import { useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
@@ -20,6 +20,9 @@ import EpisodeCard from "./EpisodeCard"
 import EpisodeHeader from "./EpisodeHeader"
 
 import { useAuth } from "@clerk/clerk-expo"
+import { getHistoryById, saveHistory } from "../../services/historyRequests"
+import { z } from "zod"
+import { SaveHistorySchemaClient } from "../../types/history"
 
 interface EpisodeListProps {
   data: AnimeInfo | null | undefined
@@ -56,6 +59,10 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
 
   const listRef = useRef<FlashList<AnimeInfoEpisode>>(null)
   const { getToken, userId } = useAuth()
+  const saveHistoryMutation = useMutation({
+    mutationFn: (props: z.infer<typeof SaveHistorySchemaClient>) =>
+      saveHistory(props),
+  })
 
   const { data: streamingLinkData, isLoading: isStreamingLinkLoading } =
     useQuery({
@@ -76,6 +83,21 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
           getToken,
         }),
     })
+
+  const { data: historyByIdData, isLoading: isHistoryByIdLoading } = useQuery({
+    queryKey: ["anime-history-by-id"],
+    queryFn: () => getHistoryById({ id: data.id, getToken }),
+  })
+
+  if (isHistoryByIdLoading) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <ActivityIndicator />
+      </View>
+    )
+  }
+
+  // console.log(historyByIdData?.episodes.map((item) => item.episodeId))
 
   const extractBestStreamingUrl = (
     sources:
@@ -118,22 +140,36 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
           timeStamp={currentTimeStampData?.timeStamp}
           style={{ height: hp(35), marginTop: hp(2) }}
           uri={extractBestStreamingUrl(streamingLinkData?.sources) as string}
-          socketFn={async ({ status, socket }) => {
-            const token = await getToken()
-
-            if (status.isPlaying && !status.isBuffering) {
-              socket?.emit("video-time-stamp", {
-                animeId: data.id,
-                episodeId: selectedEpisodeId,
-                timeStamp: status.positionMillis,
-                animeImg: data.image,
-                animeTitle: data?.title?.english
-                  ? data?.title?.english
-                  : data?.title?.romaji,
-                sessionToken: token,
-              })
-            }
+          mutationFn={({ status }) => {
+            saveHistoryMutation.mutate({
+              animeId: data.id,
+              episodeId: selectedEpisodeId,
+              timeStamp: status?.positionMillis
+                ? status.positionMillis.toString()
+                : "0",
+              animeImg: data.image,
+              animeTitle: data?.title?.english
+                ? data?.title?.english
+                : data?.title?.romaji,
+              getToken,
+            })
           }}
+          // socketFn={async ({ status, socket }) => {
+          //   const token = await getToken()
+
+          //   if (status.isPlaying && !status.isBuffering) {
+          //     socket?.emit("video-time-stamp", {
+          //       animeId: data.id,
+          //       episodeId: selectedEpisodeId,
+          //       timeStamp: status.positionMillis,
+          //       animeImg: data.image,
+          //       animeTitle: data?.title?.english
+          //         ? data?.title?.english
+          //         : data?.title?.romaji,
+          //       sessionToken: token,
+          //     })
+          //   }
+          // }}
         />
       )}
 
@@ -167,11 +203,16 @@ const EpisodeList: FC<EpisodeListProps> = ({ data, episodeId }) => {
           return (
             <>
               <EpisodeCard
-                timeStamp={
-                  item.id === currentTimeStampData?.episodeId
-                    ? currentTimeStampData.timeStamp
-                    : null
-                }
+                isEpisodeWatched={(function () {
+                  let res = false
+                  historyByIdData?.episodes?.forEach((episode) => {
+                    if (episode.episodeId === item.id) {
+                      res = true
+                      return
+                    }
+                  })
+                  return res
+                })()}
                 item={item}
                 selectedEpisodeId={selectedEpisodeId}
                 setSelectedEpisodeId={setSelectedEpisodeId}
